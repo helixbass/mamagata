@@ -1,6 +1,7 @@
 import {connect} from 'react-redux'
 import {capitalize} from 'underscore.string'
 import {set_current_mixin} from '../actions'
+import dashed_to_label from '../helpers/dashed_to_label'
 
 SelectMixin  = ({mixins, current_mixin, handle_change}) ->
   %select{
@@ -21,4 +22,4 @@ export default connect(
 MixinOption = ({mixin: {name}}) ->
   %option{
     value: name
-  }= capitalize name
+  }= dashed_to_label name

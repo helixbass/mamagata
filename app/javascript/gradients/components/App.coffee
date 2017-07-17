@@ -6,6 +6,7 @@ import SelectMixin from './SelectMixin'
 import {set_mixins, set_current_mixin} from '../actions'
 import get_current_mixin from '../selectors/get_current_mixin'
 import get_mixins from '../selectors/get_mixins'
+import isEmpty from 'lodash/isEmpty'
 import '../sass/app.sass'
 
 export default class App extends React.Component
@@ -27,7 +28,7 @@ export default class App extends React.Component
 App_ = ({current_mixin, mixins}) ->
   # .app.(has width: '100%', height: 800)
   .app
-    = if current_mixin and mixins
+    = if current_mixin and not isEmpty mixins
       %Loaded{ current_mixin, mixins }
      else
       .loading

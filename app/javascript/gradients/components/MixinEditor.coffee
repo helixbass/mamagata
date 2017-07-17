@@ -1,8 +1,8 @@
 import {connect} from 'react-redux'
 import get_mixin_args from '../selectors/get_mixin_args'
+import dashed_to_label from '../helpers/dashed_to_label'
 import find from 'lodash/find'
 import DebouncedInput from './DebouncedInput'
-import {capitalize} from 'underscore.string'
 import {update_mixin_arg} from '../actions'
 
 class MixinEditor extends React.Component
@@ -23,9 +23,6 @@ MixinParams = ({mixin, args}) ->
       arg: find args, name: param.name
       key: param.name
     } for param in mixin.params
-
-dashed_to_label = (str) ->
-  capitalize str.replace /-([a-z])/, ' $1'
 
 class MixinParam extends React.Component
   handle_change: (value) =>

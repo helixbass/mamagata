@@ -33,13 +33,19 @@ export default ->
           \s +
           \[
           (?:
-            ([^\]\(] +) # normal default
-            |
             [^\]] +
             \s
             \(
-            ([^\(\)] +) # dynamic default
+            ( # dynamic default
+              [^\(\)] +
+              |
+              rgba\(
+              [^\(\)] +
+              \)
+            )
             \)
+            |
+            ([^\]] +) # normal default
           )
           \]
           (?:
