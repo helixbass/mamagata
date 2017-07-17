@@ -32,7 +32,7 @@ class MixinParam extends React.Component
     {update_value} = @props
     update_value value
   render: ->
-    {arg: {name, value}} = @props
+    {arg: {name, value}, param} = @props
 
     .mixin-param
       %label= dashed_to_label name
@@ -40,6 +40,7 @@ class MixinParam extends React.Component
         onChange: @handle_change
         value
       }
+      %MixinParamDescription{ param }
 MixinParam = connect(
   null
   (dispatch, props) ->
@@ -47,3 +48,7 @@ MixinParam = connect(
       {mixin, param: {name}} = props
       dispatch update_mixin_arg {mixin, name, value}
 ) MixinParam
+
+MixinParamDescription = ({param: {description}}) ->
+  return null unless description
+  %p= description

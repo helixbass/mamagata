@@ -9,12 +9,31 @@ class ProjectsController < ApplicationController
 
   def render_sass
     sass = params[:sass]
+    return render json: {css: render_single_sass(sass)} if sass.is_a? String
+    render json: {
+      css:
+        map_hash(sass.permit!.to_hash) do |single_sass|
+          render_single_sass single_sass
+        end
+    }
+  end
+
+  private
+
+  def map_hash hash
+    Hash[
+      hash.map do |key, val|
+        [key, yield(val)]
+      end
+    ]
+  end
+
+  def render_single_sass sass
     engine = Sass::Engine.new(
       sass,
       syntax: :scss,
       load_paths: [Rails.root.join('..', 'sass-gradient-patterns')]
     )
-    css = engine.render
-    render json: {css: css}
+    engine.render
   end
 end

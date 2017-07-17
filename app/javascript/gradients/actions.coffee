@@ -1,10 +1,46 @@
 import axios from 'axios'
+import qs from 'qs'
 import get_mixin_args from './selectors/get_mixin_args'
+import mapValues from 'lodash/mapValues'
+import fromPairs from 'lodash/fromPairs'
 
-export set_mixins = ({mixins}) -> {
-  type: 'SET_MIXINS'
-  mixins
-}
+export set_mixins = ({mixins}) ->
+  (dispatch) ->
+    axios.get '/projects/render_sass',
+      params:
+        sass: fromPairs([
+          mixin.name
+          """
+            @import 'gradient_patterns';
+
+            .selector {
+                @include #{mixin.name};
+            }
+          """
+        ] for mixin_name, mixin of mixins)
+      paramsSerializer: (params) ->
+        qs.stringify params, arrayFormat: 'brackets'
+    .then ({data}) -> data
+    .then ({css}) ->
+      dispatch {
+        type: 'SET_MIXINS'
+        mixins:
+          mapValues mixins, (mixin, mixin_name) -> {
+            mixin...
+            preview_css: extract_css_rules css[mixin_name]
+          }
+      }
+
+extract_css_rules = (css) ->
+  match = ///
+    \.selector
+    \s +
+    {
+    ([^}] +)
+    }
+  ///.exec css
+  [all, rules] = match
+  rules
 
 export set_current_mixin = (mixin) ->
   (dispatch, getState) ->
