@@ -3,6 +3,7 @@ import get_mixin_args from '../selectors/get_mixin_args'
 import dashed_to_label from '../helpers/dashed_to_label'
 import find from 'lodash/find'
 import DebouncedInput from './DebouncedInput'
+import ColorInput from './ColorInput'
 import {update_mixin_arg} from '../actions'
 
 class MixinEditor extends React.Component
@@ -33,10 +34,17 @@ class MixinParam extends React.Component
 
     .mixin-param
       %label= dashed_to_label name
-      %DebouncedInput{
-        onChange: @handle_change
-        value
-      }
+      = switch param.type
+        when 'color'
+          %ColorInput{
+            onChange: @handle_change
+            value
+          }
+        else
+          %DebouncedInput{
+            onChange: @handle_change
+            value
+          }
       %MixinParamDescription{ param }
 MixinParam = connect(
   null
