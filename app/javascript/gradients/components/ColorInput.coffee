@@ -28,6 +28,8 @@ export default class ColorInput extends React.Component
     {editing} = @state
 
     @setState editing: not editing
+  componentWillReceiveProps: ({value}) ->
+    @setState color: rgba_obj_from_color_str value
   render: ->
     {onChange, value} = @props
     {color, editing} = @state
@@ -37,6 +39,7 @@ export default class ColorInput extends React.Component
         color
         onChangeComplete: @handle_change_complete
         onClose: @toggle_editing
+        colorNames: css_color_names
       }
     else
       %ColorButton{ color, value, onClick: @toggle_editing }

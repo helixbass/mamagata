@@ -62,24 +62,24 @@ export update_mixin_arg = ({mixin, name, value}) ->
 
 render_current_mixin = ({mixin, dispatch, getState}) ->
   mixin_args = get_mixin_args do getState
-  axios.get '/projects/render_sass',
-    params:
-      sass: """
-        @import 'gradient_patterns';
+  sass = """
+    @import 'gradient_patterns';
 
-        .app {
-            @include #{mixin.name}(#{
-              (for {name, value} in mixin_args
-                "$#{name}: #{value}"
-              ).join ', '
-            });
-        }
-      """
+    .app {
+        @include #{mixin.name}(#{
+          (for {name, value} in mixin_args
+            "$#{name}: #{value}"
+          ).join ', '
+        });
+    }
+  """
+  axios.get '/projects/render_sass',
+    params: {sass}
   .then ({data}) -> data
   .then ({css}) ->
     dispatch {
-      type: 'SET_CURRENT_MIXIN_CSS'
-      css
+      type: 'UPDATE_CURRENT_MIXIN'
+      css, sass
     }
 
     old_sheet = document.querySelector '#app_sheet'

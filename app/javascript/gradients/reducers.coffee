@@ -22,9 +22,9 @@ mixins = switchingReducer
 current_mixin = switchingReducer
   setCurrentMixin: (state, {mixin}) ->
     mixin
-  setCurrentMixinCss: (state, {css}) -> {
+  updateCurrentMixin: (state, {type, props...}) -> {
     state...
-    css
+    props...
   }
 , default: null
 
