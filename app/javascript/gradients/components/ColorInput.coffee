@@ -3,13 +3,13 @@ import {PhotoshopPicker} from 'react-color'
 import css_color_names from '../helpers/css_color_names'
 import $ from 'jquery'
 import 'jquery-color'
+import {Menu, Label, Dropdown} from 'semantic-ui-react'
 # import 'jquery-color/jquery.color.svg-names'
 {Color, extend} = $
 extend Color.names, css_color_names
 
 rgba_obj_from_color_str = (str) ->
   [r, g, b, a] = Color(str).rgba()
-  console.log {r, g, b, a, str}
   {r, g, b, a}
 
 export default class ColorInput extends React.Component
@@ -47,21 +47,12 @@ export default class ColorInput extends React.Component
 ColorButton = ({color, value, onClick}) ->
   {r, g, b, a} = color.rgb ? color
 
-  .(has
-    padding: 5
-    background: 'white'
-    borderRadius: 1
-    boxShadow: '0 0 0 1px rgba(0, 0, 0, .1)'
-    display: 'inline-block'
-    cursor: 'pointer'
-  ){ onClick }
-    .(has
-      width: 36
-      height: 14
-      borderRadius: 2
-      backgroundColor:
-        "rgba(#{r}, #{g}, #{b}, #{a})"
-      border: '1px solid #777'
-    )
-    %span
-      = value
+  %Dropdown.selection{
+    onClick
+    text: value
+    icon:
+      name: 'circle'
+      className: has
+        color: "rgba(#{r}, #{g}, #{b}, #{a})"
+        bordered: yes
+  }

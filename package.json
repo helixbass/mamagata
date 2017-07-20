@@ -46,6 +46,8 @@
     "resolve-url-loader": "^2.1.0",
     "sass-loader": "^6.0.6",
     "scss-parser": "^1.0.0",
+    "semantic-ui-css": "^2.2.11",
+    "semantic-ui-react": "^0.71.1",
     "style-loader": "^0.18.2",
     "underscore.string": "^3.3.4",
     "webpack": "^3.2.0",

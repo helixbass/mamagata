@@ -2,16 +2,21 @@ import {connect} from 'react-redux'
 import {capitalize} from 'underscore.string'
 import {set_current_mixin} from '../actions'
 import dashed_to_label from '../helpers/dashed_to_label'
+import {Form} from 'semantic-ui-react'
+{Field} = Form
 
-SelectMixin  = ({mixins, current_mixin, handle_change}) ->
-  %select{
-    onChange: handle_change
-    value: current_mixin.name
-  }
-    = %MixinOption{
-      mixin
-      key: mixin.name
-    } for mixin_name, mixin of mixins
+SelectMixin = ({mixins, current_mixin, handle_change}) ->
+  %Form
+    %Field
+      %label Pattern
+      %select{
+        onChange: handle_change
+        value: current_mixin.name
+      }
+        = %MixinOption{
+          mixin
+          key: mixin.name
+        } for mixin_name, mixin of mixins
 export default connect(
   null
   (dispatch, {mixins}) ->

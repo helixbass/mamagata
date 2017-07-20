@@ -1,6 +1,7 @@
 import {Provider, connect} from 'react-redux'
 import {css as has} from 'glamor'
 import parse_scss from '../helpers/parse_scss'
+import random_obj_prop from '../helpers/random_obj_prop'
 import MixinEditor from './MixinEditor'
 import AnimationEditor from './AnimationEditor'
 import SelectMixin from './SelectMixin'
@@ -8,8 +9,10 @@ import {set_mixins, set_current_mixin} from '../actions'
 import get_current_mixin from '../selectors/get_current_mixin'
 import get_mixins from '../selectors/get_mixins'
 import isEmpty from 'lodash/isEmpty'
+import {Segment} from 'semantic-ui-react'
 import '../sass/reset.scss'
 import '../sass/app.sass'
+import 'semantic-ui-css/semantic.min.css'
 
 export default class App extends React.Component
   componentDidMount: ->
@@ -19,7 +22,7 @@ export default class App extends React.Component
     parse_scss()
     .then ({mixins}) =>
       dispatch set_mixins {mixins}
-      dispatch set_current_mixin mixins.marrakesh
+      dispatch set_current_mixin random_obj_prop mixins
 
   render: ->
     {store} = @props
@@ -48,7 +51,11 @@ Loaded = ({current_mixin, mixins}) ->
     backgroundColor: 'rgba(245, 245, 245, 0.91)'
     padding: '20px 15px'
     borderRadius: 5
+    maxWidth: 600
   )
-    %SelectMixin{ mixins, current_mixin }
-    %MixinEditor{ mixin: current_mixin }
-    %AnimationEditor{ mixin: current_mixin }
+    %Segment{ vertical: true }
+      %SelectMixin{ mixins, current_mixin }
+    %Segment{ vertical: true }
+      %MixinEditor{ mixin: current_mixin }
+    %Segment{ vertical: true }
+      %AnimationEditor{ mixin: current_mixin }

@@ -1,24 +1,51 @@
 import {connect} from 'react-redux'
+import {css as has} from 'glamor'
 import get_mixin_args from '../selectors/get_mixin_args'
 import dashed_to_label from '../helpers/dashed_to_label'
 import find from 'lodash/find'
 import DebouncedInput from './DebouncedInput'
 import ColorInput from './ColorInput'
+import {Form, Message, Tab} from 'semantic-ui-react'
 import {update_mixin_arg} from '../actions'
+{Field} = Form
+{Pane} = Tab
 
 class MixinEditor extends React.Component
   render: ->
     {mixin, args} = @props
 
-    .mixin-editor
-      %MixinParams{ mixin, args }
+    %Tab{
+      panes: [
+        {
+          menuItem:
+            icon: 'edit'
+            content: 'Edit'
+            key: 'edit'
+          render: ->
+            %Pane
+              %MixinParams{ mixin, args }
+        }
+        {
+          menuItem: 'SCSS'
+          render: ->
+            %Pane
+              %MixinSass{ mixin }
+        }
+        {
+          menuItem: 'CSS'
+          render: ->
+            %Pane
+              %MixinCSS{ mixin }
+        }
+      ]
+    }
 export default MixinEditor = connect(
   (state) ->
     args: get_mixin_args state
 ) MixinEditor
 
 MixinParams = ({mixin, args}) ->
-  .mixin-params
+  %Form{ size: 'tiny' }
     = %MixinParam{
       param, mixin
       arg: find args, name: param.name
@@ -32,20 +59,21 @@ class MixinParam extends React.Component
   render: ->
     {arg: {name, value}, param} = @props
 
-    .mixin-param
-      %label= dashed_to_label name
-      = switch param.type
-        when 'color'
-          %ColorInput{
-            onChange: @handle_change
-            value
-          }
-        else
-          %DebouncedInput{
-            onChange: @handle_change
-            value
-          }
-      %MixinParamDescription{ param }
+    %div
+      %Field
+        %label= dashed_to_label name
+        = switch param.type
+          when 'color'
+            %ColorInput{
+              onChange: @handle_change
+              value
+            }
+          else
+            %DebouncedInput{
+              onChange: @handle_change
+              value
+            }
+        %MixinParamDescription{ param }
 MixinParam = connect(
   null
   (dispatch, props) ->
@@ -56,4 +84,21 @@ MixinParam = connect(
 
 MixinParamDescription = ({param: {description}}) ->
   return null unless description
-  %p= description
+  %Message{
+    attached: 'bottom'
+    info: yes
+    size: 'tiny'
+  }
+    %p= description
+
+MixinCSS = ({mixin: {css}}) ->
+  %pre.(has
+    whiteSpace: 'pre-wrap'
+  )
+    = css.replace /\.app /, '.selector '
+
+MixinSass = ({mixin: {sass}}) ->
+  %pre.(has
+    whiteSpace: 'pre-wrap'
+  )
+    = sass.replace /\.app /, '.selector '
