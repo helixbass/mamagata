@@ -47,11 +47,13 @@ Loaded = ({current_mixin, mixins}) ->
   .loaded.(has
     position: 'absolute'
     right: 10
-    top: 45
+    top: 15
     backgroundColor: 'rgba(245, 245, 245, 0.91)'
     padding: '20px 15px'
     borderRadius: 5
     maxWidth: 600
+    maxHeight: '90%'
+    overflowY: 'auto'
   )
     %Segment{ vertical: true }
       %SelectMixin{ mixins, current_mixin }

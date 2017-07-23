@@ -28,6 +28,42 @@ current_mixin = switchingReducer
   }
 , default: null
 
+animation_state = switchingReducer
+  play_or_pause_animation: (state) ->
+    switch state
+      when 'playing' then 'paused'
+      else 'playing'
+  add_animation_step: ->
+    'paused'
+, default: 'disabled'
+
+animation_steps = switchingReducer
+  add_animation_step: (state) -> [
+    state...
+    sass_args: {}
+    css_props: {}
+  ]
+  set_animation_step_shorthand: (state, {step_index, shorthand}) ->
+    for step, index in state
+      if index is step_index
+        {
+          step...
+          shorthand
+        }
+      else
+        step
+  set_animation_step_prop: (state, {prop, value}) ->
+    [steps..., last] = state
+    [
+      steps...
+      {
+        last...
+        "#{prop}": value
+      }
+    ]
+, default: []
+
 export default combineReducers {
   mixin_args, mixins, current_mixin
+  animation_steps, animation_state
 }

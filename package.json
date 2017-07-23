@@ -2,6 +2,8 @@
   "name": "mamagata",
   "private": true,
   "dependencies": {
+    "animate-backgrounds": "file:../animate-backgrounds-js",
+    "animejs": "https://github.com/helixbass/anime#css_hooks",
     "autoprefixer": "^7.1.2",
     "axios": "^0.16.2",
     "babel-core": "^6.25.0",

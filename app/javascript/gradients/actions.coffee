@@ -1,6 +1,7 @@
 import axios from 'axios'
 import qs from 'qs'
 import get_mixin_args from './selectors/get_mixin_args'
+import get_current_mixin from './selectors/get_current_mixin'
 import mapValues from 'lodash/mapValues'
 import fromPairs from 'lodash/fromPairs'
 
@@ -88,3 +89,14 @@ render_current_mixin = ({mixin, dispatch, getState}) ->
     sheet.id = 'app_sheet'
     sheet.innerHTML = css
     document.head.appendChild sheet
+
+export add_animation_step = ->
+  type: 'ADD_ANIMATION_STEP'
+
+export set_animation_step_shorthand = ({step_index, shorthand}) -> {
+  type: 'SET_ANIMATION_STEP_SHORTHAND'
+  step_index, shorthand
+}
+
+export play_or_pause_animation = ->
+  type: 'PLAY_OR_PAUSE_ANIMATION'
