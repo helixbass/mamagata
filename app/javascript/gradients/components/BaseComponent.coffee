@@ -16,7 +16,10 @@ export default class BaseComponent extends Component
         else
           @state[prop] = @props[prop]
 
+      instanceComponentWillReceiveProps = @componentWillReceiveProps
       @componentWillReceiveProps = (new_props) =>
+        instanceComponentWillReceiveProps?.call @, new_props
+
         for prop in @sync_state_to_props
           if isPlainObject prop
             for state_field, clb of prop

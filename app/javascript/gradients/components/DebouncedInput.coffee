@@ -9,6 +9,8 @@ export default class DebouncedInput extends BaseComponent
 
     @state = {value}
     @changed = debounce onChange, 300
+  componentWillReceiveProps: ({onChange}) ->
+    @changed = debounce onChange, 300
 
   handle_change: ({target: {value}}) =>
     @setState {value}, =>

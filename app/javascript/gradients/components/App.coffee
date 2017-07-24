@@ -31,7 +31,6 @@ export default class App extends React.Component
       %App_
 
 App_ = ({current_mixin, mixins}) ->
-  # .app.(has width: '100%', height: 800)
   .app
     = if current_mixin and not isEmpty mixins
       %Loaded{ current_mixin, mixins }

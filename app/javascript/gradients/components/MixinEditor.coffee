@@ -54,6 +54,7 @@ MixinParam = connect(
   (dispatch, props) ->
     onChange: (value) ->
       {mixin, param: {name}} = props
+
       dispatch update_mixin_arg {mixin, name, value}
 ) ArgField
 

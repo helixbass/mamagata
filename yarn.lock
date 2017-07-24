@@ -77,7 +77,7 @@ amdefine@>=0.0.4:
 
 "animate-backgrounds@https://github.com/helixbass/animate-backgrounds":
   version "0.1.0"
-  resolved "https://github.com/helixbass/animate-backgrounds#0b891c1a0c2a44880063ae3a67a4ee23fa0ffeb3"
+  resolved "https://github.com/helixbass/animate-backgrounds#82fd88af594f904f4e17a26a88657fa04de42eea"
 
 "animejs@https://github.com/helixbass/anime#css_hooks":
   version "2.0.2"

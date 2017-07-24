@@ -34,17 +34,45 @@ animation_state = switchingReducer
     switch state
       when 'playing' then 'paused'
       else 'playing'
-  add_animation_step: ->
-    'paused'
+  completed_animation: (state) ->
+    'completed'
+  set_current_mixin: ->
+    'disabled'
+  update_step_arg: ->
+    'stopped'
 , default: 'disabled'
 
+animation_progress = switchingReducer
+  set_animation_progress: (state, {progress}) ->
+    progress
+, default: 0
+
+animation_seek = switchingReducer
+  seek_animation: (state, {time}) ->
+    time
+  sought_animation: -> null
+, default: null
+
 animation_steps = switchingReducer
+  set_current_mixin: -> []
   add_animation_step: (state) -> [
-    state...
-    sass_args: {}
-    css_props: {}
+    (for step in state
+      {
+        step...
+        active: no
+      }
+    )...
     changed_args: []
   ]
+  expand_animation_step: (state, {step_index}) ->
+    for step, index in state
+      if index is step_index
+        {
+          step...
+          active: yes
+        }
+      else
+        step
   set_animation_step_shorthand: (state, {step_index, shorthand}) ->
     for step, index in state
       if index is step_index
@@ -90,4 +118,5 @@ animation_steps = switchingReducer
 export default combineReducers {
   mixin_args, mixins, current_mixin
   animation_steps, animation_state
+  animation_progress, animation_seek
 }

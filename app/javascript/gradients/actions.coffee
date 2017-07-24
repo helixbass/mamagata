@@ -47,6 +47,9 @@ extract_css_rules = (css) ->
 
 export set_current_mixin = (mixin) ->
   (dispatch, getState) ->
+    el = document.querySelector '.app'
+    el.setAttribute 'style', ''
+
     dispatch {
       type: 'SET_CURRENT_MIXIN'
       mixin
@@ -91,6 +94,27 @@ export set_animation_step_shorthand = ({step_index, shorthand}) -> {
 
 export play_or_pause_animation = ->
   type: 'PLAY_OR_PAUSE_ANIMATION'
+
+export set_animation_progress = ({progress}) -> {
+  type: 'SET_ANIMATION_PROGRESS'
+  progress
+}
+
+export expand_animation_step = ({step_index}) -> {
+  type: 'EXPAND_ANIMATION_STEP'
+  step_index
+}
+
+export seek_animation = ({time}) -> {
+  type: 'SEEK_ANIMATION'
+  time
+}
+
+export sought_animation = ->
+  type: 'SOUGHT_ANIMATION'
+
+export completed_animation = ->
+  type: 'COMPLETED_ANIMATION'
 
 export update_step_arg = ({step_index, name, value}) ->
   (dispatch, getState) ->
