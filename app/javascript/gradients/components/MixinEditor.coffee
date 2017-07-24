@@ -1,13 +1,10 @@
 import {connect} from 'react-redux'
 import {css as has} from 'glamor'
 import get_mixin_args from '../selectors/get_mixin_args'
-import dashed_to_label from '../helpers/dashed_to_label'
 import find from 'lodash/find'
-import DebouncedInput from './DebouncedInput'
-import ColorInput from './ColorInput'
-import {Form, Message, Tab} from 'semantic-ui-react'
+import ArgField from './ArgField'
+import {Form, Tab} from 'semantic-ui-react'
 import {update_mixin_arg} from '../actions'
-{Field} = Form
 {Pane} = Tab
 
 class MixinEditor extends React.Component
@@ -52,44 +49,13 @@ MixinParams = ({mixin, args}) ->
       key: param.name
     } for param in mixin.params
 
-class MixinParam extends React.Component
-  handle_change: (value) =>
-    {update_value} = @props
-    update_value value
-  render: ->
-    {arg: {name, value}, param} = @props
-
-    %div
-      %Field
-        %label= dashed_to_label name
-        = switch param.type
-          when 'color'
-            %ColorInput{
-              onChange: @handle_change
-              value
-            }
-          else
-            %DebouncedInput{
-              onChange: @handle_change
-              value
-            }
-        %MixinParamDescription{ param }
 MixinParam = connect(
   null
   (dispatch, props) ->
-    update_value: (value) ->
+    onChange: (value) ->
       {mixin, param: {name}} = props
       dispatch update_mixin_arg {mixin, name, value}
-) MixinParam
-
-MixinParamDescription = ({param: {description}}) ->
-  return null unless description
-  %Message{
-    attached: 'bottom'
-    info: yes
-    size: 'tiny'
-  }
-    %p= description
+) ArgField
 
 MixinCSS = ({mixin: {css}}) ->
   %pre.(has

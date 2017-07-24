@@ -75,12 +75,13 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
-"animate-backgrounds@file:../animate-backgrounds-js":
+"animate-backgrounds@https://github.com/helixbass/animate-backgrounds":
   version "0.1.0"
+  resolved "https://github.com/helixbass/animate-backgrounds#0b891c1a0c2a44880063ae3a67a4ee23fa0ffeb3"
 
 "animejs@https://github.com/helixbass/anime#css_hooks":
   version "2.0.2"
-  resolved "https://github.com/helixbass/anime#b346860218c74a6df89c870876f2eecac2df4c6d"
+  resolved "https://github.com/helixbass/anime#88506180cda8356c492adfb93d62cb3cef394a0f"
 
 ansi-html@0.0.7:
   version "0.0.7"

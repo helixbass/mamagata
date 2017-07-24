@@ -2,8 +2,10 @@ import axios from 'axios'
 import qs from 'qs'
 import get_mixin_args from './selectors/get_mixin_args'
 import get_current_mixin from './selectors/get_current_mixin'
+import get_sass_and_css from './helpers/get_sass_and_css'
 import mapValues from 'lodash/mapValues'
 import fromPairs from 'lodash/fromPairs'
+import find from 'lodash/find'
 
 export set_mixins = ({mixins}) ->
   (dispatch) ->
@@ -62,22 +64,11 @@ export update_mixin_arg = ({mixin, name, value}) ->
     render_current_mixin {mixin, dispatch, getState}
 
 render_current_mixin = ({mixin, dispatch, getState}) ->
-  mixin_args = get_mixin_args do getState
-  sass = """
-    @import 'gradient_patterns';
-
-    .app {
-        @include #{mixin.name}(#{
-          (for {name, value} in mixin_args
-            "$#{name}: #{value}"
-          ).join ', '
-        });
-    }
-  """
-  axios.get '/projects/render_sass',
-    params: {sass}
-  .then ({data}) -> data
-  .then ({css}) ->
+  get_sass_and_css {
+    mixin
+    mixin_args: get_mixin_args do getState
+  }
+  .then ({sass, css}) ->
     dispatch {
       type: 'UPDATE_CURRENT_MIXIN'
       css, sass
@@ -100,3 +91,17 @@ export set_animation_step_shorthand = ({step_index, shorthand}) -> {
 
 export play_or_pause_animation = ->
   type: 'PLAY_OR_PAUSE_ANIMATION'
+
+export update_step_arg = ({step_index, name, value}) ->
+  (dispatch, getState) ->
+    value ?= # TODO: for multiple steps this should be the value from the preceding step
+      find(
+        get_mixin_args do getState
+        {name}
+      )
+      .value
+
+    dispatch {
+      type: 'UPDATE_STEP_ARG'
+      step_index, name, value
+    }

@@ -1,5 +1,6 @@
 import {combineReducers} from 'redux'
 import switchingReducer from './helpers/switchingReducer'
+import find from 'lodash/find'
 
 mixin_args = switchingReducer
   setCurrentMixin: (state, {mixin: {params}}) ->
@@ -42,6 +43,7 @@ animation_steps = switchingReducer
     state...
     sass_args: {}
     css_props: {}
+    changed_args: []
   ]
   set_animation_step_shorthand: (state, {step_index, shorthand}) ->
     for step, index in state
@@ -49,6 +51,28 @@ animation_steps = switchingReducer
         {
           step...
           shorthand
+        }
+      else
+        step
+  update_step_arg: (state, {step_index, name, value}) ->
+    for step, index in state
+      if index is step_index
+        {changed_args} = step
+        {
+          step...
+          changed_args: do ->
+            updated_arg = {name, value}
+            if find changed_args, {name}
+              for changed_arg in changed_args
+                if changed_arg.name is name
+                  updated_arg
+                else
+                  changed_arg
+            else
+              [
+                changed_args...
+                updated_arg
+              ]
         }
       else
         step
