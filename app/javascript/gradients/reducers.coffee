@@ -40,6 +40,8 @@ animation_state = switchingReducer
     'disabled'
   update_step_arg: ->
     'stopped'
+  update_step_duration: ->
+    'stopped'
 , default: 'disabled'
 
 animation_progress = switchingReducer
@@ -63,6 +65,7 @@ animation_steps = switchingReducer
       }
     )...
     changed_args: []
+    duration: 400
   ]
   expand_animation_step: (state, {step_index}) ->
     for step, index in state
@@ -79,6 +82,15 @@ animation_steps = switchingReducer
         {
           step...
           shorthand
+        }
+      else
+        step
+  update_step_duration: (state, {step_index, duration}) ->
+    for step, index in state
+      if index is step_index
+        {
+          step...
+          duration
         }
       else
         step

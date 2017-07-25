@@ -116,6 +116,11 @@ export sought_animation = ->
 export completed_animation = ->
   type: 'COMPLETED_ANIMATION'
 
+export update_step_duration = ({step_index, duration}) -> {
+  type: 'UPDATE_STEP_DURATION'
+  step_index, duration
+}
+
 export update_step_arg = ({step_index, name, value}) ->
   (dispatch, getState) ->
     value ?= # TODO: for multiple steps this should be the value from the preceding step

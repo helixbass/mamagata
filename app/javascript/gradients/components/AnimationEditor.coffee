@@ -11,10 +11,10 @@ import get_sass_and_css from '../helpers/get_sass_and_css'
 import extend from '../helpers/extend'
 import extended from '../helpers/extended'
 import ArgField from './ArgField'
-import {Segment, Button, Accordion, Tab, Form, Dropdown} from 'semantic-ui-react'
+import {Segment, Button, Accordion, Tab, Form, Dropdown, Input} from 'semantic-ui-react'
 {TextArea, Field} = Form
 {Pane} = Tab
-import {play_or_pause_animation, completed_animation, seek_animation, sought_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, expand_animation_step} from '../actions'
+import {play_or_pause_animation, completed_animation, seek_animation, sought_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, update_step_duration, expand_animation_step} from '../actions'
 import anime from 'animejs'
 import 'animate-backgrounds/animate-backgrounds.anime'
 import find from 'lodash/find'
@@ -137,10 +137,10 @@ class AnimationEditor extends React.Component
               @setState {progress}
           prev_step = null
           for step, step_index in steps
+            {duration} = step
             props = await @target_props {step, prev_step, step_index, steps}
             timeline.add {
-              targets
-              duration: 1500
+              targets, duration
               easing: 'linear'
               props...
               # @target_props({step})...
@@ -244,23 +244,43 @@ AnimationSteps = connect(
       dispatch expand_animation_step {step_index}
 ) AnimationSteps
 
-AnimationStep = ({step, step_index}) ->
-  %Tab{
-    panes: [
-      {
-        menuItem: 'Changes'
-        render: ->
-          %Pane
-            %Changes{ step, step_index }
-      }
-      {
-        menuItem: 'Shorthand'
-        render: ->
-          %Pane
-            %Shorthand{ step, step_index }
-      }
-    ]
-  }
+AnimationStep = ({step, step_index, set_duration}) ->
+  {duration} = step
+
+  .animation-step
+    %Form{ size: 'tiny' }
+      %Field
+        %label Duration
+        %Input{
+          label:
+            basic: yes
+            content: 'ms'
+          labelPosition: 'right'
+          onChange: set_duration
+          value: duration
+        }
+    %Tab{
+      panes: [
+        {
+          menuItem: 'Changes'
+          render: ->
+            %Pane
+              %Changes{ step, step_index }
+        }
+        {
+          menuItem: 'Shorthand'
+          render: ->
+            %Pane
+              %Shorthand{ step, step_index }
+        }
+      ]
+    }
+AnimationStep = connect(
+  null
+  (dispatch, {step_index}) ->
+    set_duration: ({target: {value: duration}}) ->
+      dispatch update_step_duration {step_index, duration}
+) AnimationStep
 
 class Changes extends React.Component
   # handle_select_param: ({target: {value}}) =>
