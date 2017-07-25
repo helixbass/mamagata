@@ -38,6 +38,8 @@ animation_state = switchingReducer
     'completed'
   set_current_mixin: ->
     'disabled'
+  delete_step_arg: ->
+    'stopped'
   update_step_arg: ->
     'stopped'
   update_step_duration: ->
@@ -91,6 +93,17 @@ animation_steps = switchingReducer
         {
           step...
           duration
+        }
+      else
+        step
+  delete_step_arg: (state, {step_index, name}) ->
+    for step, index in state
+      if index is step_index
+        {changed_args} = step
+        {
+          step...
+          changed_args: do ->
+            changed_arg for changed_arg in changed_args when changed_arg.name isnt name
         }
       else
         step

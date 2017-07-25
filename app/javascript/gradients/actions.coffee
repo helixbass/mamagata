@@ -121,6 +121,11 @@ export update_step_duration = ({step_index, duration}) -> {
   step_index, duration
 }
 
+export delete_step_arg = ({step_index, name}) -> {
+  type: 'DELETE_STEP_ARG'
+  step_index, name
+}
+
 export update_step_arg = ({step_index, name, value}) ->
   (dispatch, getState) ->
     value ?= # TODO: for multiple steps this should be the value from the preceding step

@@ -1,11 +1,18 @@
 import dashed_to_label from '../helpers/dashed_to_label'
 import DebouncedInput from './DebouncedInput'
 import ColorInput from './ColorInput'
-import {Message, Form} from 'semantic-ui-react'
+import {Message, Form, Icon} from 'semantic-ui-react'
 {Field} = Form
 
-export default ({arg: {name, value}, param, onChange}) ->
+export default ({arg: {name, value}, param, onChange, onDelete}) ->
   %Field
+    = %Icon{
+      name: 'window close outline'
+      link: yes
+      fitted: yes
+      onClick: onDelete
+      style: float: 'right'
+    } if onDelete
     %label= dashed_to_label name
     = switch param.type
       when 'color'

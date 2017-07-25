@@ -14,7 +14,7 @@ import ArgField from './ArgField'
 import {Segment, Button, Accordion, Tab, Form, Dropdown, Input} from 'semantic-ui-react'
 {TextArea, Field} = Form
 {Pane} = Tab
-import {play_or_pause_animation, completed_animation, seek_animation, sought_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, update_step_duration, expand_animation_step} from '../actions'
+import {play_or_pause_animation, completed_animation, seek_animation, sought_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, update_step_duration, expand_animation_step} from '../actions'
 import anime from 'animejs'
 import 'animate-backgrounds/animate-backgrounds.anime'
 import find from 'lodash/find'
@@ -328,6 +328,9 @@ ChangedArg = connect(
   (dispatch, {step_index, arg: {name}}) ->
     onChange: (value) ->
       dispatch update_step_arg {step_index, name, value}
+    onDelete: ->
+      # return unless window.confirm 'Remove ?'
+      dispatch delete_step_arg {step_index, name}
 ) ArgField
 
 Shorthand = ({step, step_index, set_shorthand}) ->
