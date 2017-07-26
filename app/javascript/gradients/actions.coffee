@@ -95,6 +95,11 @@ export set_animation_step_shorthand = ({step_index, shorthand}) -> {
 export play_animation = ->
   type: 'PLAY_ANIMATION'
 
+export update_loop = ({loop: _loop}) -> {
+  type: 'UPDATE_LOOP'
+  loop: _loop
+}
+
 export pause_animation = ->
   type: 'PAUSE_ANIMATION'
 

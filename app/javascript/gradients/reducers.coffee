@@ -32,6 +32,8 @@ current_mixin = switchingReducer
 reset_animation = switchingReducer
   set_current_mixin: ->
     yes
+  update_loop: ->
+    yes
   delete_step_arg: ->
     yes
   update_step_arg: ->
@@ -76,8 +78,16 @@ animation_seek = switchingReducer
   sought_animation: -> null
 , default: null
 
+_loop = switchingReducer
+  update_loop: (state, {loop: _loop}) ->
+    _loop
+, default: count: 4
+
 animation_steps = switchingReducer
-  set_current_mixin: -> []
+  set_current_mixin: -> [
+    changed_args: []
+    duration: 400
+  ]
   add_animation_step: (state) -> [
     (for step in state
       {
@@ -183,5 +193,5 @@ export default combineReducers {
   mixin_args, mixins, current_mixin
   animation_steps, animation_state
   animation_progress, animation_seek
-  reset_animation
+  reset_animation, loop: _loop
 }

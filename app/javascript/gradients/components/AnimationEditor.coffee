@@ -1,4 +1,5 @@
 import {connect} from 'react-redux'
+import {css as has} from 'glamor'
 import get_mixin_args from '../selectors/get_mixin_args'
 import get_animation_state from '../selectors/get_animation_state'
 # import get_animation_progress from '../selectors/get_animation_progress'
@@ -6,6 +7,7 @@ import get_animation_seek from '../selectors/get_animation_seek'
 import get_animation_steps from '../selectors/get_animation_steps'
 import get_current_mixin from '../selectors/get_current_mixin'
 import get_reset_animation from '../selectors/get_reset_animation'
+import get_loop from '../selectors/get_loop'
 import dashed_to_label from '../helpers/dashed_to_label'
 import get_sass_and_css from '../helpers/get_sass_and_css'
 import parse_css_props from '../helpers/parse_css_props'
@@ -15,7 +17,7 @@ import ArgField from './ArgField'
 import {Segment, Button, Accordion, Tab, Form, Checkbox, Dropdown, Input} from 'semantic-ui-react'
 {TextArea, Field} = Form
 {Pane} = Tab
-import {play_animation, pause_animation, completed_animation, did_reset_animation as _did_reset_animation, seek_animation, sought_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, toggle_step_preview, update_step, toggle_animation_step} from '../actions'
+import {play_animation, pause_animation, completed_animation, did_reset_animation as _did_reset_animation, seek_animation, sought_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, toggle_step_preview, update_step, toggle_animation_step, update_loop as _update_loop} from '../actions'
 import anime from 'animejs'
 import 'animate-backgrounds/animate-backgrounds.anime'
 import find from 'lodash/find'
@@ -55,11 +57,11 @@ class AnimationEditor extends React.Component
       fromPairs(
         [name, val] for name, val of step_css_props when start_css_props[name] isnt val
       )
-  create_animation: ({steps, completed, _update_step}) ->
+  create_animation: ({steps, completed, _update_step, loop: _loop}) ->
     targets = '.app'
     timeline = anime.timeline
-      direction: 'alternate'
-      loop: 8
+      direction: 'alternate' if _loop
+      loop: _loop?.count * 2
       autoplay: no
       complete: ->
         do completed
@@ -82,7 +84,7 @@ class AnimationEditor extends React.Component
       animation: timeline
       progress: 0
 
-  componentWillReceiveProps: ({animation_state, animation_seek, sought, steps, completed, _update_step, reset_animation, did_reset_animation}) ->
+  componentWillReceiveProps: ({animation_state, animation_seek, sought, steps, completed, _update_step, reset_animation, did_reset_animation, loop: _loop}) ->
     {animation} = @state
     {animation_state: old_state} = @props
 
@@ -109,7 +111,7 @@ class AnimationEditor extends React.Component
       .style.cssText = ''
 
       @setState(animation: null, progress: 0) if animation
-      @create_animation {steps, completed, _update_step}
+      @create_animation {steps, completed, _update_step, loop: _loop}
       # set_progress progress: 0
       do did_reset_animation
   handle_seek: ({target: {value}}) =>
@@ -124,17 +126,8 @@ class AnimationEditor extends React.Component
     {progress} = @state
 
     .animation-editor
-      %Segment{ vertical: yes, textAlign: 'center' }
-        %PlayButton{ animation_state, play, pause }
-        %Progress{ animation_progress: progress, onChange: @handle_seek, disabled: 'disabled' is animation_state }
-      %Segment{ vertical: yes }
-        %Button{
-          icon: 'plus'
-          size: 'tiny'
-          content: 'Add animation step'
-          onClick: add_step
-        }
-        %AnimationSteps
+      %Controls{ animation_state, play, pause, progress, @handle_seek }
+      %Steps{ add_step }
 export default AnimationEditor = connect(
   (state) ->
     args: get_mixin_args state
@@ -142,6 +135,7 @@ export default AnimationEditor = connect(
     animation_seek: get_animation_seek state
     # animation_progress: get_animation_progress state
     steps: get_animation_steps state
+    loop: get_loop state
     current_mixin: get_current_mixin state
     reset_animation: get_reset_animation state
   (dispatch) ->
@@ -165,6 +159,53 @@ export default AnimationEditor = connect(
       dispatch do add_animation_step
 ) AnimationEditor
 
+Controls = ({animation_state, play, pause, progress, handle_seek}) ->
+  %Segment{ vertical: yes }
+    %div
+      %PlayButton{ animation_state, play, pause }
+      %Progress{ animation_progress: progress, onChange: handle_seek, disabled: 'disabled' is animation_state }
+    %LoopControl
+
+LoopControl = ({update_loop, _loop}) ->
+  .(has marginLeft: 10, marginTop: 2)
+    %Checkbox{
+      label: 'Loop?'
+      onChange: ->
+        update_loop
+          loop: not _loop
+          count: 4
+      checked: !! _loop
+    }
+    = if _loop
+      {count} = _loop
+      %Input.(has
+        width: 40
+        marginLeft: 5
+      ){
+        label:
+          basic: yes
+          content: 'x'
+        labelPosition: 'right'
+        value: count
+        onChange: ({target: {value: count}}) ->
+          update_loop {
+            loop: yes
+            count
+          }
+      }
+LoopControl = connect(
+  (state) ->
+    _loop: get_loop state
+  (dispatch) ->
+    update_loop: ({loop: _loop, count}) ->
+      dispatch _update_loop(
+        loop:
+          if _loop
+            {count}
+          else off
+      )
+) LoopControl
+
 Progress = ({animation_progress, onChange, disabled}) ->
   %input{
     type: 'range'
@@ -174,6 +215,7 @@ Progress = ({animation_progress, onChange, disabled}) ->
 
 PlayButton = ({animation_state, play, pause}) ->
   %Button{
+    style: marginRight: 5
     icon:
       switch animation_state
         when 'playing' then 'pause'
@@ -185,6 +227,16 @@ PlayButton = ({animation_state, play, pause}) ->
         when 'playing' then pause
         else play
   }
+
+Steps = ({add_step}) ->
+  %Segment{ vertical: yes }
+    %Button{
+      icon: 'plus'
+      size: 'tiny'
+      content: 'Add animation step'
+      onClick: add_step
+    }
+    %AnimationSteps
 
 AnimationSteps = ({steps, toggle_step}) ->
   %Accordion{
