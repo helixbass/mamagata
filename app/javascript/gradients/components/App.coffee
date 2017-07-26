@@ -8,6 +8,8 @@ import SelectMixin from './SelectMixin'
 import {set_mixins, set_current_mixin} from '../actions'
 import get_current_mixin from '../selectors/get_current_mixin'
 import get_mixins from '../selectors/get_mixins'
+import get_preview_step_css from '../selectors/get_preview_step_css'
+import get_animation_state from '../selectors/get_animation_state'
 import isEmpty from 'lodash/isEmpty'
 import {Segment} from 'semantic-ui-react'
 import '../sass/reset.scss'
@@ -30,16 +32,23 @@ export default class App extends React.Component
     %Provider{ store }
       %App_
 
-App_ = ({current_mixin, mixins}) ->
+App_ = ({current_mixin, mixins, preview_step_css, animation_state}) ->
   .app
-    = if current_mixin and not isEmpty mixins
-      %Loaded{ current_mixin, mixins }
-     else
-      .loading
+    .preview.(has
+      width:  '100%'
+      height: '100%'
+      # preview_step_css...
+    ){ style: preview_step_css unless animation_state in ['playing', 'paused', 'completed']}
+      = if current_mixin and not isEmpty mixins
+        %Loaded{ current_mixin, mixins }
+       else
+        .loading
 App_ = connect(
   (state) ->
-    current_mixin: get_current_mixin state
-    mixins:        get_mixins        state
+    current_mixin:    get_current_mixin    state
+    mixins:           get_mixins           state
+    preview_step_css: get_preview_step_css state
+    animation_state:  get_animation_state state
 ) App_
 
 Loaded = ({current_mixin, mixins}) ->

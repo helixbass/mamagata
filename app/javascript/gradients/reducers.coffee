@@ -29,11 +29,26 @@ current_mixin = switchingReducer
   }
 , default: null
 
+reset_animation = switchingReducer
+  set_current_mixin: ->
+    yes
+  delete_step_arg: ->
+    yes
+  update_step_arg: ->
+    yes
+  update_mixin_arg: ->
+    yes
+  update_step: (state, {duration}) ->
+    duration?
+  did_reset_animation: ->
+    no
+, default: no
+
 animation_state = switchingReducer
-  play_or_pause_animation: (state) ->
-    switch state
-      when 'playing' then 'paused'
-      else 'playing'
+  play_animation: (state) ->
+    'playing'
+  pause_animation: (state) ->
+    'paused'
   completed_animation: (state) ->
     'completed'
   set_current_mixin: ->
@@ -42,7 +57,11 @@ animation_state = switchingReducer
     'stopped'
   update_step_arg: ->
     'stopped'
-  update_step_duration: ->
+  update_mixin_arg: ->
+    'stopped'
+  update_step: (state, {duration}) ->
+    return state unless duration?
+
     'stopped'
 , default: 'disabled'
 
@@ -69,12 +88,32 @@ animation_steps = switchingReducer
     changed_args: []
     duration: 400
   ]
-  expand_animation_step: (state, {step_index}) ->
+  toggle_step_preview: (state, {step_index}) ->
     for step, index in state
       if index is step_index
+        {preview} = step
         {
           step...
-          active: yes
+          preview: not preview
+        }
+      else
+        {
+          step...
+          preview: no
+        }
+  play_animation: (state) ->
+    for step, index in state
+      {
+        step...
+        preview: no
+      }
+  toggle_animation_step: (state, {step_index}) ->
+    for step, index in state
+      if index is step_index
+        {active} = step
+        {
+          step...
+          active: not (active ? yes)
         }
       else
         step
@@ -87,12 +126,12 @@ animation_steps = switchingReducer
         }
       else
         step
-  update_step_duration: (state, {step_index, duration}) ->
+  update_step: (state, {step_index, props...}) ->
     for step, index in state
       if index is step_index
         {
           step...
-          duration
+          props...
         }
       else
         step
@@ -144,4 +183,5 @@ export default combineReducers {
   mixin_args, mixins, current_mixin
   animation_steps, animation_state
   animation_progress, animation_seek
+  reset_animation
 }

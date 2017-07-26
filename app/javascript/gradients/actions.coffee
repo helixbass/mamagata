@@ -92,16 +92,24 @@ export set_animation_step_shorthand = ({step_index, shorthand}) -> {
   step_index, shorthand
 }
 
-export play_or_pause_animation = ->
-  type: 'PLAY_OR_PAUSE_ANIMATION'
+export play_animation = ->
+  type: 'PLAY_ANIMATION'
+
+export pause_animation = ->
+  type: 'PAUSE_ANIMATION'
 
 export set_animation_progress = ({progress}) -> {
   type: 'SET_ANIMATION_PROGRESS'
   progress
 }
 
-export expand_animation_step = ({step_index}) -> {
-  type: 'EXPAND_ANIMATION_STEP'
+export toggle_step_preview = ({step_index}) -> {
+  type: 'TOGGLE_STEP_PREVIEW'
+  step_index
+}
+
+export toggle_animation_step = ({step_index}) -> {
+  type: 'TOGGLE_ANIMATION_STEP'
   step_index
 }
 
@@ -110,15 +118,18 @@ export seek_animation = ({time}) -> {
   time
 }
 
+export did_reset_animation = ->
+  type: 'DID_RESET_ANIMATION'
+
 export sought_animation = ->
   type: 'SOUGHT_ANIMATION'
 
 export completed_animation = ->
   type: 'COMPLETED_ANIMATION'
 
-export update_step_duration = ({step_index, duration}) -> {
-  type: 'UPDATE_STEP_DURATION'
-  step_index, duration
+export update_step = ({step_index, props...}) -> {
+  type: 'UPDATE_STEP'
+  step_index, props...
 }
 
 export delete_step_arg = ({step_index, name}) -> {

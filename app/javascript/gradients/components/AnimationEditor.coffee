@@ -5,16 +5,17 @@ import get_animation_state from '../selectors/get_animation_state'
 import get_animation_seek from '../selectors/get_animation_seek'
 import get_animation_steps from '../selectors/get_animation_steps'
 import get_current_mixin from '../selectors/get_current_mixin'
+import get_reset_animation from '../selectors/get_reset_animation'
 import dashed_to_label from '../helpers/dashed_to_label'
-import dashed_to_camel from '../helpers/dashed_to_camel'
 import get_sass_and_css from '../helpers/get_sass_and_css'
+import parse_css_props from '../helpers/parse_css_props'
 import extend from '../helpers/extend'
 import extended from '../helpers/extended'
 import ArgField from './ArgField'
-import {Segment, Button, Accordion, Tab, Form, Dropdown, Input} from 'semantic-ui-react'
+import {Segment, Button, Accordion, Tab, Form, Checkbox, Dropdown, Input} from 'semantic-ui-react'
 {TextArea, Field} = Form
 {Pane} = Tab
-import {play_or_pause_animation, completed_animation, seek_animation, sought_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, update_step_duration, expand_animation_step} from '../actions'
+import {play_animation, pause_animation, completed_animation, did_reset_animation as _did_reset_animation, seek_animation, sought_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, toggle_step_preview, update_step, toggle_animation_step} from '../actions'
 import anime from 'animejs'
 import 'animate-backgrounds/animate-backgrounds.anime'
 import find from 'lodash/find'
@@ -30,41 +31,14 @@ class AnimationEditor extends React.Component
     for {changed_args} in steps[...step_index] by -1
       return last_changed if last_changed=find changed_args, {name}
     arg
-  target_props: ({step, prev_step, step_index, steps}) ->
+  target_props: ({step, prev_step, step_index, steps, _update_step}) ->
     {args, current_mixin} = @props
     {changed_args} = step
     start_css =
       prev_step?.css ? current_mixin.css
-    parse_css_props = ({css, get_css_dom_vals}) ->
-      props = {}
-      css.replace ///
-        \n
-        \s +
-        ([a-z\-] +) # name
-        :
-        \s *
-        ([^;] +) # value
-        ;
-      ///g, (all, name, value) ->
-        props[dashed_to_camel name] = value
-      if 'background' of props
-        extend props,
-          get_css_dom_vals {
-            props: ['backgroundImage', 'backgroundPosition']
-            parsed: props
-            css
-          }
-        delete props.background
-      props
-    start_css_props = parse_css_props
-      css: start_css
-      get_css_dom_vals: ({props}) ->
-        el = document.querySelector '.app'
-        style = window.getComputedStyle el, null
-        fromPairs(
-          [prop, style[prop]] for prop in props
-        )
-
+    start_css_props =
+      parse_css_props
+        css: start_css
     get_sass_and_css {
       mixin: current_mixin
       mixin_args:
@@ -75,40 +49,40 @@ class AnimationEditor extends React.Component
             @prev_arg {arg, step_index, steps}
     }
     .then ({sass, css}) ->
-      extend step, {sass, css}
-      step_css_props = parse_css_props {
-        css
-        get_css_dom_vals: ({props, parsed, css}) ->
-          el = document.createElement 'div'
-          el.style.visibility = 'hidden'
-          document.body.appendChild el
-          props_str = do ->
-            match = ///
-              ^
-              \.
-              [a-z\-] +
-              \s *
-              \{
-              ([^}] +)
-              \}
-            ///.exec css
-            [all, props_str] = match
-            props_str
-          el.style.cssText = props_str
-          # for prop, val of parsed
-          #   el.style[prop] = val
-          style = window.getComputedStyle el, null
-          ret = fromPairs(
-            [prop, style[prop]] for prop in props
-          )
-          document.body.removeChild el
-          ret
-      }
+      _update_step {step_index, sass, css}
+      step_css_props =
+        parse_css_props {css}
       fromPairs(
         [name, val] for name, val of step_css_props when start_css_props[name] isnt val
       )
+  create_animation: ({steps, completed, _update_step}) ->
+    targets = '.app'
+    timeline = anime.timeline
+      direction: 'alternate'
+      loop: 8
+      autoplay: no
+      complete: ->
+        do completed
+      update: ({progress}) =>
+      #   set_progress {progress}
+        @setState {progress}
+    prev_step = null
+    for step, step_index in steps
+      {duration} = step
+      props = await @target_props {step, prev_step, step_index, steps, _update_step}
+      timeline.add {
+        targets, duration
+        easing: 'linear'
+        props...
+        # @target_props({step})...
+      }
+      prev_step = step
+    console.log {timeline}
+    @setState
+      animation: timeline
+      progress: 0
 
-  componentWillReceiveProps: ({animation_state, animation_seek, sought, steps, completed}) ->
+  componentWillReceiveProps: ({animation_state, animation_seek, sought, steps, completed, _update_step, reset_animation, did_reset_animation}) ->
     {animation} = @state
     {animation_state: old_state} = @props
 
@@ -118,47 +92,26 @@ class AnimationEditor extends React.Component
 
     switch animation_state
       when 'playing'
-        if animation
-          switch old_state
-            when 'completed'
-              do animation.restart
-            when 'paused'
-              do animation.play
-        else do =>
-          targets = '.app'
-          timeline = anime.timeline
-            direction: 'alternate'
-            loop: 8
-            autoplay: no
-            complete: ->
-              do completed
-            update: ({progress}) =>
-            #   set_progress {progress}
-              @setState {progress}
-          prev_step = null
-          for step, step_index in steps
-            {duration} = step
-            props = await @target_props {step, prev_step, step_index, steps}
-            timeline.add {
-              targets, duration
-              easing: 'linear'
-              props...
-              # @target_props({step})...
-            }
-            prev_step = step
-          do timeline.play
-          console.log {timeline}
-          @setState
-            animation: timeline
-            progress: 0
+        switch old_state
+          when 'completed'
+            animation?.restart()
+          when 'paused', 'stopped'
+            animation?.play()
       when 'paused'
         if old_state is 'playing'
           animation?.pause()
       when 'stopped', 'disabled'
         animation?.pause()
         animation?.seek 0
-        @setState(animation: null, progress: 0) if animation
-        # set_progress progress: 0
+
+    if reset_animation
+      document.querySelector '.app'
+      .style.cssText = ''
+
+      @setState(animation: null, progress: 0) if animation
+      @create_animation {steps, completed, _update_step}
+      # set_progress progress: 0
+      do did_reset_animation
   handle_seek: ({target: {value}}) =>
     {seek} = @props
     {animation} = @state
@@ -167,12 +120,12 @@ class AnimationEditor extends React.Component
 
     seek time: duration * value / 100
   render: ->
-    {mixin, args, animation_state, play_or_pause, add_step} = @props
+    {mixin, args, animation_state, play, pause, add_step} = @props
     {progress} = @state
 
     .animation-editor
       %Segment{ vertical: yes, textAlign: 'center' }
-        %PlayButton{ animation_state, play_or_pause }
+        %PlayButton{ animation_state, play, pause }
         %Progress{ animation_progress: progress, onChange: @handle_seek, disabled: 'disabled' is animation_state }
       %Segment{ vertical: yes }
         %Button{
@@ -190,13 +143,20 @@ export default AnimationEditor = connect(
     # animation_progress: get_animation_progress state
     steps: get_animation_steps state
     current_mixin: get_current_mixin state
+    reset_animation: get_reset_animation state
   (dispatch) ->
-    play_or_pause: ->
-      dispatch do play_or_pause_animation
+    play: ->
+      dispatch do play_animation
+    pause: ->
+      dispatch do pause_animation
+    did_reset_animation: ->
+      dispatch do _did_reset_animation
     completed: ->
       dispatch do completed_animation
     # set_progress: ({progress}) ->
     #   dispatch set_animation_progress {progress}
+    _update_step: ({step_index, props...}) ->
+      dispatch update_step {step_index, props...}
     seek: ({time}) ->
       dispatch seek_animation {time}
     sought: ->
@@ -212,7 +172,7 @@ Progress = ({animation_progress, onChange, disabled}) ->
     onChange, disabled
   }
 
-PlayButton = ({animation_state, play_or_pause}) ->
+PlayButton = ({animation_state, play, pause}) ->
   %Button{
     icon:
       switch animation_state
@@ -220,10 +180,13 @@ PlayButton = ({animation_state, play_or_pause}) ->
         else 'play'
     disabled: 'disabled' is animation_state
     active:   'playing'  is animation_state
-    onClick: play_or_pause
+    onClick:
+      switch animation_state
+        when 'playing' then pause
+        else play
   }
 
-AnimationSteps = ({steps, expand_step}) ->
+AnimationSteps = ({steps, toggle_step}) ->
   %Accordion{
     exclusive: no
     panels:
@@ -234,22 +197,27 @@ AnimationSteps = ({steps, expand_step}) ->
           %AnimationStep{ step, step_index }
         active: active ? yes
     onTitleClick: (event, step_index) ->
-      expand_step {step_index}
+      toggle_step {step_index}
   }
 AnimationSteps = connect(
   (state) ->
     steps: get_animation_steps state
   (dispatch) ->
-    expand_step: ({step_index}) ->
-      dispatch expand_animation_step {step_index}
+    toggle_step: ({step_index}) ->
+      dispatch toggle_animation_step {step_index}
 ) AnimationSteps
 
-AnimationStep = ({step, step_index, set_duration}) ->
-  {duration} = step
+AnimationStep = ({step, step_index, set_duration, toggle_preview}) ->
+  {duration, preview} = step
 
   .animation-step
+    %Checkbox{
+      label: 'Preview?'
+      onChange: -> toggle_preview {step_index}
+      checked: preview
+    }
     %Form{ size: 'tiny' }
-      %Field
+      %Field{ inline: yes }
         %label Duration
         %Input{
           label:
@@ -258,6 +226,7 @@ AnimationStep = ({step, step_index, set_duration}) ->
           labelPosition: 'right'
           onChange: set_duration
           value: duration
+          style: width: '70px'
         }
     %Tab{
       panes: [
@@ -279,7 +248,9 @@ AnimationStep = connect(
   null
   (dispatch, {step_index}) ->
     set_duration: ({target: {value: duration}}) ->
-      dispatch update_step_duration {step_index, duration}
+      dispatch update_step {step_index, duration}
+    toggle_preview: ({step_index}) ->
+      dispatch toggle_step_preview {step_index}
 ) AnimationStep
 
 class Changes extends React.Component
