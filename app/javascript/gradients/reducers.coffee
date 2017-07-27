@@ -47,11 +47,13 @@ reset_animation = switchingReducer
 , default: no
 
 animation_state = switchingReducer
-  play_animation: (state) ->
+  play_animation: ->
     'playing'
-  pause_animation: (state) ->
+  pause_animation: ->
     'paused'
-  completed_animation: (state) ->
+  reset_animation: ->
+    'stopped'
+  completed_animation: ->
     'completed'
   set_current_mixin: ->
     'disabled'

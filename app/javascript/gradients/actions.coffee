@@ -103,6 +103,9 @@ export update_loop = ({loop: _loop}) -> {
 export pause_animation = ->
   type: 'PAUSE_ANIMATION'
 
+export reset_animation = ->
+  type: 'RESET_ANIMATION'
+
 export set_animation_progress = ({progress}) -> {
   type: 'SET_ANIMATION_PROGRESS'
   progress

@@ -17,7 +17,8 @@ import ArgField from './ArgField'
 import {Segment, Button, Accordion, Tab, Form, Checkbox, Dropdown, Input} from 'semantic-ui-react'
 {TextArea, Field} = Form
 {Pane} = Tab
-import {play_animation, pause_animation, completed_animation, did_reset_animation as _did_reset_animation, seek_animation, sought_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, toggle_step_preview, update_step, toggle_animation_step, update_loop as _update_loop} from '../actions'
+{Group} = Button
+import {play_animation, pause_animation, reset_animation, completed_animation, did_reset_animation as _did_reset_animation, seek_animation, sought_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, toggle_step_preview, update_step, toggle_animation_step, update_loop as _update_loop} from '../actions'
 import anime from 'animejs'
 import 'animate-backgrounds/animate-backgrounds.anime'
 import find from 'lodash/find'
@@ -122,11 +123,11 @@ class AnimationEditor extends React.Component
 
     seek time: duration * value / 100
   render: ->
-    {mixin, args, animation_state, play, pause, add_step} = @props
+    {mixin, args, animation_state, play, pause, reset, add_step} = @props
     {progress} = @state
 
     .animation-editor
-      %Controls{ animation_state, play, pause, progress, @handle_seek }
+      %Controls{ animation_state, play, pause, reset, progress, @handle_seek }
       %Steps{ add_step }
 export default AnimationEditor = connect(
   (state) ->
@@ -143,6 +144,8 @@ export default AnimationEditor = connect(
       dispatch do play_animation
     pause: ->
       dispatch do pause_animation
+    reset: ->
+      dispatch do reset_animation
     did_reset_animation: ->
       dispatch do _did_reset_animation
     completed: ->
@@ -159,10 +162,12 @@ export default AnimationEditor = connect(
       dispatch do add_animation_step
 ) AnimationEditor
 
-Controls = ({animation_state, play, pause, progress, handle_seek}) ->
+Controls = ({animation_state, play, pause, reset, progress, handle_seek}) ->
   %Segment{ vertical: yes }
     %div
-      %PlayButton{ animation_state, play, pause }
+      %Group
+        %ResetButton{ animation_state, reset }
+        %PlayButton{ animation_state, play, pause }
       %Progress{ animation_progress: progress, onChange: handle_seek, disabled: 'disabled' is animation_state }
     %LoopControl
 
@@ -211,6 +216,13 @@ Progress = ({animation_progress, onChange, disabled}) ->
     type: 'range'
     value: animation_progress ? 0
     onChange, disabled
+  }
+
+ResetButton = ({animation_state, reset}) ->
+  %Button{
+    icon: 'step backward'
+    disabled: 'disabled' is animation_state
+    onClick: reset
   }
 
 PlayButton = ({animation_state, play, pause}) ->
