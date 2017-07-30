@@ -1,0 +1,25 @@
+- per-step easing
+- delay/offset/non-sequential
+- make animation always use _changed so that it can be combined
+- auto-open control (eg color) when choosing animated param
+- opacity control in color picker (redo some of it using semantic-ui-react?)
+- reset mixin
+- add more patterns
+- export animation JS
+- shorthand editor for animations? or just JS export?
+- choose animation engine?
+- UI transitions?
+- choose pattern UI include previews
+- delete step?
+- document animation
+- shorthand for background-position/-size?
+- interface for animating position?
+- UI controls based on type
+  - boolean choose True/False
+  - don't include booleans (any others?) in list of animatable params
+- package and document (incl link to sassdoc) mixins
+- website:
+  - blog post
+  - https for website?
+  - /projects/dutchkills?
+- error messages when server fails to render sass
