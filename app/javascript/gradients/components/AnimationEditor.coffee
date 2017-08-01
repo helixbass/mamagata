@@ -1,5 +1,6 @@
 import {connect} from 'react-redux'
 import {css as has} from 'glamor'
+import {contains} from 'underscore.string'
 import get_mixin_args from '../selectors/get_mixin_args'
 import get_animation_state from '../selectors/get_animation_state'
 # import get_animation_progress from '../selectors/get_animation_progress'
@@ -71,10 +72,10 @@ class AnimationEditor extends React.Component
         @setState {progress}
     prev_step = null
     for step, step_index in steps
-      {duration, easing} = step
+      {duration, easing, elasticity} = step
       props = await @target_props {step, prev_step, step_index, steps, _update_step}
       timeline.add {
-        targets, duration, easing
+        targets, duration, easing, elasticity
         props...
         # @target_props({step})...
       }
@@ -280,6 +281,7 @@ easing_options = [
   'easeInExpo'
   'easeInCirc'
   'easeInBack'
+  'easeInElastic'
   'easeOutQuad'
   'easeOutCubic'
   'easeOutQuart'
@@ -288,6 +290,7 @@ easing_options = [
   'easeOutExpo'
   'easeOutCirc'
   'easeOutBack'
+  'easeOutElastic'
   'easeInOutQuad'
   'easeInOutCubic'
   'easeInOutQuart'
@@ -296,14 +299,14 @@ easing_options = [
   'easeInOutExpo'
   'easeInOutCirc'
   'easeInOutBack'
+  'easeInOutElastic'
 ].map (easing) ->
   key: easing
   value: easing
   text: easing
-console.log {easing_options}
 
-AnimationStep = ({step, step_index, set_duration, set_easing, toggle_preview}) ->
-  {duration, easing, preview} = step
+AnimationStep = ({step, step_index, set_duration, set_easing, set_elasticity, toggle_preview}) ->
+  {duration, easing, preview, elasticity} = step
 
   .animation-step
     %Checkbox{
@@ -330,6 +333,14 @@ AnimationStep = ({step, step_index, set_duration, set_easing, toggle_preview}) -
           value: easing
           options: easing_options
         }
+      = if contains easing, 'Elastic'
+        %Field{ inline: yes }
+          %label Elasticity
+          %Input{
+            onChange: set_elasticity
+            value: elasticity
+            style: width: '70px'
+          }
     %Tab{
       panes: [
         {
@@ -353,6 +364,8 @@ AnimationStep = connect(
       dispatch update_step {step_index, duration}
     set_easing: (event, {value: easing}) ->
       dispatch update_step {step_index, easing}
+    set_elasticity: ({target: {value: elasticity}}) ->
+      dispatch update_step {step_index, elasticity}
     toggle_preview: ({step_index}) ->
       dispatch toggle_step_preview {step_index}
 ) AnimationStep

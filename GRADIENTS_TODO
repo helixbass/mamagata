@@ -38,3 +38,6 @@
 - highlight steps as they're running?
 - yin yang rename size param to big/outer circle size
   - size animation doesn't work - inner circles don't position correctly
+- editing mixin param needs to reset/remove style attribute from .app
+- make sure elasticity has no effect except when elastic easing selected
+- elasticity control - slider? min/max number? label max 1000?
