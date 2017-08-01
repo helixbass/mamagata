@@ -3,6 +3,7 @@ import qs from 'qs'
 import get_mixin_args from './selectors/get_mixin_args'
 import get_current_mixin from './selectors/get_current_mixin'
 import get_sass_and_css from './helpers/get_sass_and_css'
+import {color_name} from './helpers/css_color_names'
 import mapValues from 'lodash/mapValues'
 import fromPairs from 'lodash/fromPairs'
 import find from 'lodash/find'
@@ -61,7 +62,8 @@ export update_mixin_arg = ({mixin, name, value}) ->
   (dispatch, getState) ->
     dispatch {
       type: 'UPDATE_MIXIN_ARG'
-      name, value
+      name
+      value: color_name value
     }
 
     render_current_mixin {mixin, dispatch, getState}
@@ -156,5 +158,6 @@ export update_step_arg = ({step_index, name, value}) ->
 
     dispatch {
       type: 'UPDATE_STEP_ARG'
-      step_index, name, value
+      step_index, name
+      value: color_name value
     }

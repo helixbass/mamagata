@@ -3,14 +3,14 @@ import switchingReducer from './helpers/switchingReducer'
 import find from 'lodash/find'
 
 mixin_args = switchingReducer
-  setCurrentMixin: (state, {mixin: {params}}) ->
+  set_current_mixin: (state, {mixin: {params}}) ->
     for {name, default: _default} in params
       {
         name
         value: _default
       }
 
-  updateMixinArg: (state, {name, value}) ->
+  update_mixin_arg: (state, {name, value}) ->
     for arg in state
       if arg.name is name
         {name, value}

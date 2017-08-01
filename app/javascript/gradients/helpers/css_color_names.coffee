@@ -1,4 +1,4 @@
-export default
+color_names =
   aliceblue: "#f0f8ff"
   antiquewhite: "#faebd7"
   aquamarine: "#7fffd4"
@@ -131,3 +131,9 @@ export default
   wheat: "#f5deb3"
   whitesmoke: "#f5f5f5"
   yellowgreen: "#9acd32"
+
+export default color_names
+
+export color_name = (val) ->
+  return name for name, hex of color_names when hex is val
+  val
