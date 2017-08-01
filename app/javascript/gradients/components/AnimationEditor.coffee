@@ -71,11 +71,10 @@ class AnimationEditor extends React.Component
         @setState {progress}
     prev_step = null
     for step, step_index in steps
-      {duration} = step
+      {duration, easing} = step
       props = await @target_props {step, prev_step, step_index, steps, _update_step}
       timeline.add {
-        targets, duration
-        easing: 'linear'
+        targets, duration, easing
         props...
         # @target_props({step})...
       }
@@ -271,8 +270,40 @@ AnimationSteps = connect(
       dispatch toggle_animation_step {step_index}
 ) AnimationSteps
 
-AnimationStep = ({step, step_index, set_duration, toggle_preview}) ->
-  {duration, preview} = step
+easing_options = [
+  'linear'
+  'easeInQuad'
+  'easeInCubic'
+  'easeInQuart'
+  'easeInQuint'
+  'easeInSine'
+  'easeInExpo'
+  'easeInCirc'
+  'easeInBack'
+  'easeOutQuad'
+  'easeOutCubic'
+  'easeOutQuart'
+  'easeOutQuint'
+  'easeOutSine'
+  'easeOutExpo'
+  'easeOutCirc'
+  'easeOutBack'
+  'easeInOutQuad'
+  'easeInOutCubic'
+  'easeInOutQuart'
+  'easeInOutQuint'
+  'easeInOutSine'
+  'easeInOutExpo'
+  'easeInOutCirc'
+  'easeInOutBack'
+].map (easing) ->
+  key: easing
+  value: easing
+  text: easing
+console.log {easing_options}
+
+AnimationStep = ({step, step_index, set_duration, set_easing, toggle_preview}) ->
+  {duration, easing, preview} = step
 
   .animation-step
     %Checkbox{
@@ -291,6 +322,13 @@ AnimationStep = ({step, step_index, set_duration, toggle_preview}) ->
           onChange: set_duration
           value: duration
           style: width: '70px'
+        }
+      %Field{ inline: yes }
+        %label Easing
+        %Dropdown.tiny{
+          onChange: set_easing
+          value: easing
+          options: easing_options
         }
     %Tab{
       panes: [
@@ -313,6 +351,8 @@ AnimationStep = connect(
   (dispatch, {step_index}) ->
     set_duration: ({target: {value: duration}}) ->
       dispatch update_step {step_index, duration}
+    set_easing: (event, {value: easing}) ->
+      dispatch update_step {step_index, easing}
     toggle_preview: ({step_index}) ->
       dispatch toggle_step_preview {step_index}
 ) AnimationStep

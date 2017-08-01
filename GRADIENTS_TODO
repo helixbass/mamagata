@@ -31,3 +31,10 @@
 - measure frame rate
 - bundle size
 - preview button weirdness - says preview checked but can drag around timeline and doesn't uncheck
+  - and play button stays as pause button
+- step styling - Preview/duration spacing
+- hearts sizing
+  - color darkmagenta background-color aquamarine
+- highlight steps as they're running?
+- yin yang rename size param to big/outer circle size
+  - size animation doesn't work - inner circles don't position correctly

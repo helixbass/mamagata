@@ -40,8 +40,8 @@ reset_animation = switchingReducer
     yes
   update_mixin_arg: ->
     yes
-  update_step: (state, {duration}) ->
-    duration?
+  update_step: (state, {duration, easing}) ->
+    duration? or easing?
   did_reset_animation: ->
     no
 , default: no
@@ -63,8 +63,8 @@ animation_state = switchingReducer
     'stopped'
   update_mixin_arg: ->
     'stopped'
-  update_step: (state, {duration}) ->
-    return state unless duration?
+  update_step: (state, {duration, easing}) ->
+    return state unless duration? or easing?
 
     'stopped'
 , default: 'disabled'
@@ -85,10 +85,13 @@ _loop = switchingReducer
     _loop
 , default: count: 4
 
+default_step_props =
+  changed_args: []
+  duration: 400
+  easing: 'linear'
 animation_steps = switchingReducer
   set_current_mixin: -> [
-    changed_args: []
-    duration: 400
+    default_step_props
   ]
   add_animation_step: (state) -> [
     (for step in state
@@ -97,8 +100,7 @@ animation_steps = switchingReducer
         active: no
       }
     )...
-    changed_args: []
-    duration: 400
+    default_step_props
   ]
   toggle_step_preview: (state, {step_index}) ->
     for step, index in state
