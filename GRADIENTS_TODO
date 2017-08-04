@@ -1,4 +1,3 @@
-- per-step easing
 - delay/offset/non-sequential
 - auto-open control (eg color) when choosing animated param
 - opacity control in color picker (redo some of it using semantic-ui-react?)
@@ -10,7 +9,7 @@
 - UI transitions?
 - choose pattern include previews
   - group by blend mode/normal
-- delete step?
+- delete/reorder/insert-before step?
 - document animation
 - shorthand for background-position/-size?
 - interface for animating position?
@@ -18,6 +17,7 @@
   - boolean choose True/False
   - don't include booleans (any others?) in list of animatable params
 - package and document (incl link to sassdoc) mixins
+  - change website dependency to package rather than file:../
 - website:
   - blog post
   - https for website?
@@ -35,9 +35,13 @@
 - step styling - Preview/duration spacing
 - hearts sizing
   - color darkmagenta background-color aquamarine
-- highlight steps as they're running?
 - yin yang rename size param to big/outer circle size
   - size animation doesn't work - inner circles don't position correctly
+- marrakesh: add params for ring start/thickness
+- highlight steps as they're running?
 - editing mixin param needs to reset/remove style attribute from .app
 - make sure elasticity has no effect except when elastic easing selected
 - elasticity control - slider? min/max number? label max 1000?
+- how to handle connected/relative defaults?
+- initial value when adding animated param should come from prev step, not initial value
+- handle eg %Modal.Header

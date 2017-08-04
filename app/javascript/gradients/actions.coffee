@@ -2,7 +2,12 @@ import axios from 'axios'
 import qs from 'qs'
 import get_mixin_args from './selectors/get_mixin_args'
 import get_current_mixin from './selectors/get_current_mixin'
+import get_mixins from './selectors/get_mixins'
+import get_animation_steps from './selectors/get_animation_steps'
+import get_loop from './selectors/get_loop'
 import get_sass_and_css from './helpers/get_sass_and_css'
+import get_saved from './helpers/get_saved'
+import _save from './helpers/save'
 import {color_name} from './helpers/css_color_names'
 import mapValues from 'lodash/mapValues'
 import fromPairs from 'lodash/fromPairs'
@@ -46,7 +51,7 @@ extract_css_rules = (css) ->
   [all, rules] = match
   rules
 
-export set_current_mixin = (mixin) ->
+export set_current_mixin = (mixin, {render=yes}={}) ->
   (dispatch, getState) ->
     el = document.querySelector '.app'
     el.setAttribute 'style', ''
@@ -56,7 +61,7 @@ export set_current_mixin = (mixin) ->
       mixin
     }
 
-    render_current_mixin {mixin, dispatch, getState}
+    render_current_mixin {mixin, dispatch, getState} if render
 
 export update_mixin_arg = ({mixin, name, value}) ->
   (dispatch, getState) ->
@@ -69,9 +74,12 @@ export update_mixin_arg = ({mixin, name, value}) ->
     render_current_mixin {mixin, dispatch, getState}
 
 render_current_mixin = ({mixin, dispatch, getState}) ->
+  state = do getState
+  mixin ?= get_current_mixin state
+
   get_sass_and_css {
     mixin
-    mixin_args: get_mixin_args do getState
+    mixin_args: get_mixin_args state
   }
   .then ({sass, css}) ->
     dispatch {
@@ -160,4 +168,43 @@ export update_step_arg = ({step_index, name, value}) ->
       type: 'UPDATE_STEP_ARG'
       step_index, name
       value: color_name value
+    }
+
+export load_saved = ({name}) ->
+  (dispatch, getState) ->
+    saved = find get_saved(), {name}
+    {mixin_name} = saved
+
+    dispatch set_current_mixin(
+      get_mixins(do getState)[mixin_name]
+      render: no
+    )
+
+    dispatch {
+      type: 'LOAD_SAVED'
+      saved
+    }
+
+    render_current_mixin {dispatch, getState}
+
+export save = ({name}) ->
+  (dispatch, getState) ->
+    state = do getState
+
+    mixin_args = get_mixin_args state
+    animation_steps = get_animation_steps state
+    _loop = get_loop state
+    {name: mixin_name} = get_current_mixin state
+
+    data = {
+      mixin_args, animation_steps
+      mixin_name, name
+      loop: _loop
+    }
+
+    _save data
+
+    dispatch {
+      type: 'SAVE'
+      data...
     }

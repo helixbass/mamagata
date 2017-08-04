@@ -5,6 +5,7 @@ import random_obj_prop from '../helpers/random_obj_prop'
 import MixinEditor from './MixinEditor'
 import AnimationEditor from './AnimationEditor'
 import SelectMixin from './SelectMixin'
+import SaveButton from './SaveButton'
 import {set_mixins, set_current_mixin} from '../actions'
 import get_current_mixin from '../selectors/get_current_mixin'
 import get_mixins from '../selectors/get_mixins'
@@ -64,6 +65,7 @@ Loaded = ({current_mixin, mixins}) ->
     maxHeight: '90%'
     overflowY: 'auto'
   )
+    %SaveButton
     %Segment{ vertical: true }
       %SelectMixin{ mixins, current_mixin }
     %Tab{

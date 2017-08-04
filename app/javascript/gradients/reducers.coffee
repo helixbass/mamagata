@@ -3,6 +3,8 @@ import switchingReducer from './helpers/switchingReducer'
 import find from 'lodash/find'
 
 mixin_args = switchingReducer
+  load_saved: (state, {saved: {mixin_args}}) ->
+    mixin_args
   set_current_mixin: (state, {mixin: {params}}) ->
     for {name, default: _default} in params
       {
@@ -57,6 +59,8 @@ animation_state = switchingReducer
     'completed'
   set_current_mixin: ->
     'disabled'
+  load_saved: ->
+    'stopped'
   delete_step_arg: ->
     'stopped'
   update_step_arg: ->
@@ -81,6 +85,8 @@ animation_seek = switchingReducer
 , default: null
 
 _loop = switchingReducer
+  load_saved: (state, {saved: {loop: _loop}}) ->
+    _loop
   update_loop: (state, {loop: _loop}) ->
     _loop
 , default: count: 4
@@ -91,6 +97,8 @@ default_step_props =
   easing: 'linear'
   elasticity: 500
 animation_steps = switchingReducer
+  load_saved: (state, {saved: {animation_steps}}) ->
+    animation_steps
   set_current_mixin: -> [
     default_step_props
   ]
@@ -194,9 +202,18 @@ animation_steps = switchingReducer
     ]
 , default: []
 
+working_on_saved = switchingReducer
+  set_current_mixin: ->
+    null
+  load_saved: (state, {saved: {name}}) ->
+    name
+  save: (state, {name}) ->
+    name
+
 export default combineReducers {
   mixin_args, mixins, current_mixin
   animation_steps, animation_state
   animation_progress, animation_seek
   reset_animation, loop: _loop
+  working_on_saved
 }
