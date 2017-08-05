@@ -3,142 +3,26 @@ import {css as has} from 'glamor'
 import {contains} from 'underscore.string'
 import get_mixin_args from '../selectors/get_mixin_args'
 import get_animation_state from '../selectors/get_animation_state'
-# import get_animation_progress from '../selectors/get_animation_progress'
-import get_animation_seek from '../selectors/get_animation_seek'
 import get_animation_steps from '../selectors/get_animation_steps'
 import get_current_mixin from '../selectors/get_current_mixin'
-import get_reset_animation from '../selectors/get_reset_animation'
 import get_loop from '../selectors/get_loop'
 import dashed_to_label from '../helpers/dashed_to_label'
-import get_sass_and_css from '../helpers/get_sass_and_css'
-import parse_css_props from '../helpers/parse_css_props'
-import extend from '../helpers/extend'
-import extended from '../helpers/extended'
 import ArgField from './ArgField'
 import {Segment, Button, Accordion, Tab, Form, Checkbox, Dropdown, Input} from 'semantic-ui-react'
 {TextArea, Field} = Form
 {Pane} = Tab
 {Group} = Button
-import {play_animation, pause_animation, reset_animation, completed_animation, did_reset_animation as _did_reset_animation, seek_animation, sought_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, toggle_step_preview, update_step, toggle_animation_step, update_loop as _update_loop} from '../actions'
-import anime from 'animejs'
-import 'animate-backgrounds/animate-backgrounds.anime'
+import {play_animation, pause_animation, reset_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, toggle_step_preview, update_step, toggle_animation_step, update_loop as _update_loop} from '../actions'
 import find from 'lodash/find'
 import fromPairs from 'lodash/fromPairs'
 
-class AnimationEditor extends React.Component
-  constructor: ->
-    super()
-    @state =
-      animation: null
-  prev_arg: ({arg, step_index, steps}) ->
-    {name} = arg
-    for {changed_args} in steps[...step_index] by -1
-      return last_changed if last_changed=find changed_args, {name}
-    arg
-  target_props: ({step, prev_step, step_index, steps, _update_step}) ->
-    {args, current_mixin} = @props
-    {changed_args} = step
-    start_css =
-      prev_step?.css ? current_mixin.css
-    start_css_props =
-      parse_css_props
-        css: start_css
-    get_sass_and_css {
-      mixin: current_mixin
-      mixin_args:
-        for arg in args
-          if changed=find changed_args, name: arg.name
-            changed
-          else
-            @prev_arg {arg, step_index, steps}
-    }
-    .then ({sass, css}) ->
-      _update_step {step_index, sass, css}
-      step_css_props =
-        parse_css_props {css}
-      fromPairs(
-        [name, val] for name, val of step_css_props when start_css_props[name] isnt val
-      )
-  create_animation: ({steps, completed, _update_step, loop: _loop}) ->
-    targets = '.app'
-    timeline = anime.timeline
-      direction: 'alternate' if _loop
-      loop: _loop?.count * 2
-      autoplay: no
-      complete: ->
-        do completed
-      update: ({progress}) =>
-      #   set_progress {progress}
-        @setState {progress}
-    prev_step = null
-    for step, step_index in steps
-      {duration, easing, elasticity} = step
-      props = await @target_props {step, prev_step, step_index, steps, _update_step}
-      timeline.add {
-        targets, duration, easing, elasticity
-        props...
-        # @target_props({step})...
-      }
-      prev_step = step
-    console.log {timeline}
-    @setState
-      animation: timeline
-      progress: 0
-
-  componentWillReceiveProps: ({animation_state, animation_seek, sought, steps, completed, _update_step, reset_animation, did_reset_animation, loop: _loop}) ->
-    {animation} = @state
-    {animation_state: old_state} = @props
-
-    if animation_seek
-      animation?.seek animation_seek
-      do sought
-
-    switch animation_state
-      when 'playing'
-        switch old_state
-          when 'completed'
-            animation?.restart()
-          when 'paused', 'stopped'
-            animation?.play()
-      when 'paused'
-        if old_state is 'playing'
-          animation?.pause()
-      when 'stopped', 'disabled'
-        animation?.pause()
-        animation?.seek 0
-
-    if reset_animation
-      document.querySelector '.app'
-      .style.cssText = ''
-
-      @setState(animation: null, progress: 0) if animation
-      @create_animation {steps, completed, _update_step, loop: _loop}
-      # set_progress progress: 0
-      do did_reset_animation
-  handle_seek: ({target: {value}}) =>
-    {seek} = @props
-    {animation} = @state
-    return unless animation
-    {duration} = animation
-
-    seek time: duration * value / 100
-  render: ->
-    {mixin, args, animation_state, play, pause, reset, add_step} = @props
-    {progress} = @state
-
-    .animation-editor
-      %Controls{ animation_state, play, pause, reset, progress, @handle_seek }
-      %Steps{ add_step }
+AnimationEditor = ({animation_state, play, pause, reset, add_step, progress, handle_seek}) ->
+  .animation-editor
+    %Controls{ animation_state, play, pause, reset, progress, handle_seek }
+    %Steps{ add_step }
 export default AnimationEditor = connect(
   (state) ->
-    args: get_mixin_args state
     animation_state: get_animation_state state
-    animation_seek: get_animation_seek state
-    # animation_progress: get_animation_progress state
-    steps: get_animation_steps state
-    loop: get_loop state
-    current_mixin: get_current_mixin state
-    reset_animation: get_reset_animation state
   (dispatch) ->
     play: ->
       dispatch do play_animation
@@ -146,18 +30,6 @@ export default AnimationEditor = connect(
       dispatch do pause_animation
     reset: ->
       dispatch do reset_animation
-    did_reset_animation: ->
-      dispatch do _did_reset_animation
-    completed: ->
-      dispatch do completed_animation
-    # set_progress: ({progress}) ->
-    #   dispatch set_animation_progress {progress}
-    _update_step: ({step_index, props...}) ->
-      dispatch update_step {step_index, props...}
-    seek: ({time}) ->
-      dispatch seek_animation {time}
-    sought: ->
-      dispatch do sought_animation
     add_step: ->
       dispatch do add_animation_step
 ) AnimationEditor
