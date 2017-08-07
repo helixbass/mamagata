@@ -12,6 +12,7 @@ import {Segment, Button, Accordion, Tab, Form, Checkbox, Dropdown, Input} from '
 {TextArea, Field} = Form
 {Pane} = Tab
 {Group} = Button
+import Collapse from 'react-css-collapse'
 import {play_animation, pause_animation, reset_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, toggle_step_preview, update_step, toggle_animation_step, update_loop as _update_loop} from '../actions'
 import find from 'lodash/find'
 import fromPairs from 'lodash/fromPairs'
@@ -127,11 +128,16 @@ AnimationSteps = ({steps, toggle_step}) ->
     exclusive: no
     panels:
       for step, step_index in steps
-        {active} = step
-        title: "Step #{step_index + 1}"
-        content:
-          %AnimationStep{ step, step_index }
-        active: active ? yes
+        {active=yes} = step
+        {
+          title: "Step #{step_index + 1}"
+          content:
+            %Collapse.(has
+              transition: 'height 150ms ease-out'
+            ){ isOpen: active }
+              %AnimationStep{ step, step_index }
+          active
+        }
     onTitleClick: (event, step_index) ->
       toggle_step {step_index}
   }

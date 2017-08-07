@@ -4059,6 +4059,10 @@ rc@^1.1.7:
     semantic-ui-react "^0.71.3"
     tinycolor2 "^1.1.2"
 
+react-css-collapse@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/react-css-collapse/-/react-css-collapse-3.0.2.tgz#26958b0545dfdc62d49701e51ff1f931ee199950"
+
 react-css-property-operations@^15.4.1:
   version "15.4.1"
   resolved "https://registry.yarnpkg.com/react-css-property-operations/-/react-css-property-operations-15.4.1.tgz#4c0e305df4cc35f0f5fd2d65a79214c8b012db35"
@@ -4426,16 +4430,6 @@ semantic-ui-css@^2.2.11:
   resolved "https://registry.yarnpkg.com/semantic-ui-css/-/semantic-ui-css-2.2.11.tgz#875aabb28897cc08d637d69f18ebbce6a28d49bb"
   dependencies:
     jquery x.*
-
-semantic-ui-react@^0.71.1:
-  version "0.71.1"
-  resolved "https://registry.yarnpkg.com/semantic-ui-react/-/semantic-ui-react-0.71.1.tgz#241055be740bf0a73363f484446b360e944a792b"
-  dependencies:
-    babel-runtime "^6.22.0"
-    classnames "^2.1.5"
-    debug "^2.6.3"
-    lodash "^4.17.2"
-    prop-types "15.5.8"
 
 semantic-ui-react@^0.71.3:
   version "0.71.3"

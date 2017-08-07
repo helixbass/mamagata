@@ -18,6 +18,7 @@ SelectMixin = ({mixins, current_mixin, handle_change}) ->
           key: mixin.name
         } for mixin_name, mixin of mixins
 export default connect(
+  null
   (dispatch, {mixins}) ->
     handle_change: ({target: {value}}) ->
       dispatch set_current_mixin mixins[value]

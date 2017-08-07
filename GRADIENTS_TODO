@@ -39,6 +39,10 @@
   - size animation doesn't work - inner circles don't position correctly
 - marrakesh: add params for ring start/thickness
 - band-weave: name viking? add start/end outlines? different inner/outer ring colors (10% lighter?)
+- jacks:
+  - pull in stroke-color cutoff circle (based on dot/stroke width?) so that at eg smaller dot size less likely to be revealed
+  - allow stagger?
+  - bottom half?
 - highlight steps as they're running?
 - make sure elasticity has no effect except when elastic easing selected
 - elasticity control - slider? min/max number? label max 1000?
@@ -48,3 +52,6 @@
 - shake (ie easing ends where it starts)?
 - add eslint (undefined used vars) to build
 - allow to use up/down arrow keys to adjust input values?
+- support animating radial position (eg circle at x% y%) so that eg animating jacks size works
+- disable things/indicate loading while waiting for server to render sass?
+- support relative units when animating gradients?
