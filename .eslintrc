@@ -1,0 +1,12 @@
+{
+  "parser": "babel-eslint",
+  "globals": {
+    "window": false,
+    "document": false,
+    "console": false,
+    "fetch": false,
+  },
+  "rules": {
+    "no-undef": "error",
+  },
+}

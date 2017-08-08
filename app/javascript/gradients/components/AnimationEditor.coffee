@@ -10,7 +10,6 @@ import dashed_to_label from '../helpers/dashed_to_label'
 import ArgField from './ArgField'
 import {Segment, Button, Accordion, Tab, Form, Checkbox, Dropdown, Input} from 'semantic-ui-react'
 {TextArea, Field} = Form
-{Pane} = Tab
 {Group} = Button
 import Collapse from 'react-css-collapse'
 import {play_animation, pause_animation, reset_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, toggle_step_preview, update_step, toggle_animation_step, update_loop as _update_loop} from '../actions'
@@ -224,13 +223,13 @@ AnimationStep = ({step, step_index, set_duration, set_easing, set_elasticity, to
         {
           menuItem: 'Changes'
           render: ->
-            %Pane
+            %Tab.Pane
               %Changes{ step, step_index }
         }
         {
           menuItem: 'Shorthand'
           render: ->
-            %Pane
+            %Tab.Pane
               %Shorthand{ step, step_index }
         }
       ]

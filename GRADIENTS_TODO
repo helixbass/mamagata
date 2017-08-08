@@ -48,9 +48,7 @@
 - elasticity control - slider? min/max number? label max 1000?
 - how to handle connected/relative defaults?
 - initial value when adding animated param should come from prev step, not initial value
-- handle eg %Modal.Header
 - shake (ie easing ends where it starts)?
-- add eslint (undefined used vars) to build
 - allow to use up/down arrow keys to adjust input values?
 - support animating radial position (eg circle at x% y%) so that eg animating jacks size works
 - disable things/indicate loading while waiting for server to render sass?

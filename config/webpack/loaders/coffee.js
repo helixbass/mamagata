@@ -1,4 +1,4 @@
 module.exports = {
   test: /\.coffee(\.erb)?$/,
-  loader: ['babel-loader', 'coffee-jsxy-loader'],
+  loader: ['babel-loader', 'eslint-loader', 'coffee-jsxy-loader'],
 }
