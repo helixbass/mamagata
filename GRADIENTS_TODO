@@ -18,6 +18,7 @@
   - don't include booleans (any others?) in list of animatable params
 - package and document (incl link to sassdoc) mixins
   - change website dependency to package rather than file:../
+  - same for react-color
 - website:
   - blog post
   - https for website?
@@ -29,9 +30,8 @@
 - mobile view
 - link to original pattern
 - measure frame rate
+  - how much does reading current css val affect it? allow to specify whether to animate using current val (to allow simultaneous animations) or start val (to avoid checking current val)?
 - bundle size
-- preview button weirdness - says preview checked but can drag around timeline and doesn't uncheck
-  - and play button stays as pause button
 - step styling - Preview/duration spacing
 - hearts sizing
   - color darkmagenta background-color aquamarine
@@ -43,13 +43,20 @@
   - pull in stroke-color cutoff circle (based on dot/stroke width?) so that at eg smaller dot size less likely to be revealed
   - allow stagger?
   - bottom half?
+  - make leftmost/rightmost strokes a little more than a quarter, their edge is exposed at size > ~35%
 - highlight steps as they're running?
 - make sure elasticity has no effect except when elastic easing selected
 - elasticity control - slider? min/max number? label max 1000?
 - how to handle connected/relative defaults?
-- initial value when adding animated param should come from prev step, not initial value
 - shake (ie easing ends where it starts)?
 - allow to use up/down arrow keys to adjust input values?
-- support animating radial position (eg circle at x% y%) so that eg animating jacks size works
 - disable things/indicate loading while waiting for server to render sass?
 - support relative units when animating gradients?
+- is HSV calculation funky in color picker?
+- preview button weirdness - says preview checked but can drag around timeline and doesn't uncheck
+  - and play button stays as pause button
+- initial value when adding animated param should come from prev step, not initial value
+- animation steps don't update corresponding params when mixin arg changed
+- should reset to customize tab when new pattern selected?
+- animations should fail gracefully on browsers that don't support gradients
+- cumulative versions of sharp-*()? ie specify additional offset of each stop

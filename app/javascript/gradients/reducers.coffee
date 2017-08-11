@@ -40,7 +40,8 @@ reset_animation = switchingReducer
     yes
   update_step_arg: ->
     yes
-  update_mixin_arg: ->
+  # update_mixin_arg: ->
+  update_current_mixin: ->
     yes
   update_step: (state, {duration, easing, elasticity}) ->
     duration? or easing? or elasticity?

@@ -117,7 +117,7 @@ Steps = ({add_step}) ->
     %Button{
       icon: 'plus'
       size: 'tiny'
-      content: 'Add animation step'
+      content: 'Add step'
       onClick: add_step
     }
     %AnimationSteps
@@ -261,6 +261,8 @@ class Changes extends React.Component
         %Dropdown.icon.tiny{
           button: yes
           labeled: yes
+          scrolling: yes
+          upward: yes
           icon: 'plus'
           text: 'Add animated param'
           options:

@@ -29,6 +29,7 @@ import anime from 'animejs'
 import 'animate-backgrounds/animate-backgrounds.anime'
 import find from 'lodash/find'
 import fromPairs from 'lodash/fromPairs'
+import defer from 'lodash/defer'
 import '../sass/reset.scss'
 import '../sass/app.sass'
 import 'semantic-ui-css/semantic.min.css'
@@ -93,7 +94,7 @@ class App_ extends React.Component
         do completed
       update: ({progress}) =>
       #   set_progress {progress}
-        @setState {progress}
+        # defer => @setState {progress}
     prev_step = null
     for step, step_index in steps
       {duration, easing, elasticity} = step

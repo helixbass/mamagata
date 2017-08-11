@@ -20,8 +20,15 @@ export default class ColorInput extends React.Component
       editing: no
   handle_change_complete: (color) =>
     {onChange} = @props
+    console.log {color}
+    {rgb: {r, g, b, a}, hex} = color
 
-    onChange color.hex
+    onChange(
+      if a < 1
+        "rgba(#{r}, #{g}, #{b}, #{a})"
+      else
+        hex
+    )
 
     @setState {color}
   toggle_editing: =>
