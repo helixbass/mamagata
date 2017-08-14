@@ -53,6 +53,8 @@ extract_css_rules = (css) ->
 
 export set_current_mixin = (mixin, {render=yes}={}) ->
   (dispatch, getState) ->
+    {preview_css} = mixin
+
     el = document.querySelector '.app'
     el.setAttribute 'style', ''
 
@@ -60,6 +62,8 @@ export set_current_mixin = (mixin, {render=yes}={}) ->
       type: 'SET_CURRENT_MIXIN'
       mixin
     }
+
+    set_preview_css ".app {#{preview_css}}" if preview_css
 
     render_current_mixin {mixin, dispatch, getState} if render
 
@@ -87,12 +91,15 @@ render_current_mixin = ({mixin, dispatch, getState}) ->
       css, sass
     }
 
-    old_sheet = document.querySelector '#app_sheet'
-    document.head.removeChild old_sheet if old_sheet
-    sheet = document.createElement 'style'
-    sheet.id = 'app_sheet'
-    sheet.innerHTML = css
-    document.head.appendChild sheet
+    set_preview_css css
+
+set_preview_css = (css) ->
+  old_sheet = document.querySelector '#app_sheet'
+  document.head.removeChild old_sheet if old_sheet
+  sheet = document.createElement 'style'
+  sheet.id = 'app_sheet'
+  sheet.innerHTML = css
+  document.head.appendChild sheet
 
 export add_animation_step = ->
   type: 'ADD_ANIMATION_STEP'
