@@ -21,6 +21,17 @@ export default ->
           [all, url] = match
           return current_mixin.source_url = url
 
+        if match = ///
+          ^
+          /
+          \s +
+          @group
+          \s +
+          (. +) # group
+        ///.exec comment
+          [all, group] = match
+          return current_mixin.group = group
+
         return unless match = ///
           ^
           /

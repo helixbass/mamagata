@@ -8,8 +8,6 @@
 - shorthand editor for animations? or just JS export?
 - choose animation engine?
 - UI transitions?
-- choose pattern include previews
-  - group by blend mode/normal
 - document animation
 - shorthand for background-position/-size?
 - interface for animating position?
@@ -38,6 +36,7 @@
 - yin yang rename size param to big/outer circle size
   - size animation doesn't work - inner circles don't position correctly
 - marrakesh: add params for ring start/thickness
+- argyle: allow to change angle?
 - band-weave: name viking? add start/end outlines? different inner/outer ring colors (10% lighter?)
 - jacks:
   - pull in stroke-color cutoff circle (based on dot/stroke width?) so that at eg smaller dot size less likely to be revealed
