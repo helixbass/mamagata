@@ -1,5 +1,6 @@
 import {combineReducers} from 'redux'
 import switchingReducer from './helpers/switchingReducer'
+import _int from './helpers/_int'
 import find from 'lodash/find'
 
 mixin_args = switchingReducer
@@ -36,6 +37,10 @@ reset_animation = switchingReducer
     yes
   update_loop: ->
     yes
+  delete_step: ->
+    yes
+  reorder_step: ->
+    yes
   delete_step_arg: ->
     yes
   update_step_arg: ->
@@ -61,6 +66,10 @@ animation_state = switchingReducer
   set_current_mixin: ->
     'disabled'
   load_saved: ->
+    'stopped'
+  delete_step: ->
+    'stopped'
+  reorder_step: ->
     'stopped'
   delete_step_arg: ->
     'stopped'
@@ -112,6 +121,20 @@ animation_steps = switchingReducer
     )...
     default_step_props
   ]
+  delete_step: (state, {step_index}) ->
+    step for step, _step_index in state when step_index isnt _step_index
+  reorder_step: (state, {step_index, before_step_index}) ->
+    step = state[step_index]
+    return [
+      (_step for _step, _step_index in state when step_index isnt _step_index)...
+      step
+    ] if before_step_index is 'last'
+    steps = []
+    before_step_index = _int before_step_index
+    for _step, _step_index in state when _step_index isnt step_index
+      steps.push step if _step_index is before_step_index
+      steps.push _step
+    steps
   toggle_step_preview: (state, {step_index}) ->
     for step, index in state
       if index is step_index

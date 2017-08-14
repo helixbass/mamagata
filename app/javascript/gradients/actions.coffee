@@ -150,6 +150,16 @@ export update_step = ({step_index, props...}) -> {
   step_index, props...
 }
 
+export delete_step = ({step_index}) -> {
+  type: 'DELETE_STEP'
+  step_index
+}
+
+export reorder_step = ({step_index, before_step_index}) -> {
+  type: 'REORDER_STEP'
+  step_index, before_step_index
+}
+
 export delete_step_arg = ({step_index, name}) -> {
   type: 'DELETE_STEP_ARG'
   step_index, name

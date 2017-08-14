@@ -7,12 +7,14 @@ import get_animation_steps from '../selectors/get_animation_steps'
 import get_current_mixin from '../selectors/get_current_mixin'
 import get_loop from '../selectors/get_loop'
 import dashed_to_label from '../helpers/dashed_to_label'
+import _int from '../helpers/_int'
+import extended from '../helpers/extended'
 import ArgField from './ArgField'
-import {Segment, Button, Accordion, Tab, Form, Checkbox, Dropdown, Input} from 'semantic-ui-react'
+import {Segment, Button, Accordion, Tab, Form, Checkbox, Dropdown, Input, Icon} from 'semantic-ui-react'
 {TextArea, Field} = Form
 {Group} = Button
 import Collapse from 'react-css-collapse'
-import {play_animation, pause_animation, reset_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, toggle_step_preview, update_step, toggle_animation_step, update_loop as _update_loop} from '../actions'
+import {play_animation, pause_animation, reset_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, delete_step, reorder_step, toggle_step_preview, update_step, toggle_animation_step, update_loop as _update_loop} from '../actions'
 import find from 'lodash/find'
 import fromPairs from 'lodash/fromPairs'
 
@@ -134,7 +136,7 @@ AnimationSteps = ({steps, toggle_step}) ->
             %Collapse.(has
               transition: 'height 150ms ease-out'
             ){ isOpen: active }
-              %AnimationStep{ step, step_index }
+              %AnimationStep{ step, step_index, steps }
           active
         }
     onTitleClick: (event, step_index) ->
@@ -182,58 +184,93 @@ easing_options = [
   value: easing
   text: easing
 
-AnimationStep = ({step, step_index, set_duration, set_easing, set_elasticity, toggle_preview}) ->
-  {duration, easing, preview, elasticity} = step
+class AnimationStep extends React.Component
+  constructor: (props) ->
+    super props
 
-  .animation-step
-    %Checkbox{
-      label: 'Preview?'
-      onChange: -> toggle_preview {step_index}
-      checked: preview
-    }
-    %Form{ size: 'tiny' }
-      %Field{ inline: yes }
-        %label Duration
-        %Input{
-          label:
-            basic: yes
-            content: 'ms'
-          labelPosition: 'right'
-          onChange: set_duration
-          value: duration
-          style: width: '70px'
-        }
-      %Field{ inline: yes }
-        %label Easing
-        %Dropdown.tiny{
-          onChange: set_easing
-          value: easing
-          options: easing_options
-        }
-      = if contains easing, 'Elastic'
+    @state =
+      sorting: no
+  toggle_sorting: =>
+    {sorting} = @state
+
+    @setState sorting: not sorting
+  handle_reorder: (event) =>
+    {handle_reorder} = @props
+    handle_reorder event
+    @setState sorting: no
+  render: ->
+    {step, step_index, set_duration, set_easing, set_elasticity, toggle_preview, handle_delete, steps} = @props
+    {duration, easing, preview, elasticity} = step
+    {sorting} = @state
+
+    .animation-step
+      %Icon{
+        name: 'window close outline'
+        link: yes
+        fitted: yes
+        onClick: handle_delete
+        style: float: 'right'
+      }
+      = %Icon{
+        name: 'sort'
+        link: yes
+        fitted: yes
+        onClick: @toggle_sorting
+        style:
+          float: 'right'
+          marginRight: 7
+      } if steps.length > 1
+      %Checkbox{
+        label: 'Preview?'
+        onChange: toggle_preview
+        checked: preview
+      }
+      = %Sorting{ step_index, steps, @handle_reorder } if sorting
+      %Form{ size: 'tiny' }
         %Field{ inline: yes }
-          %label Elasticity
+          %label Duration
           %Input{
-            onChange: set_elasticity
-            value: elasticity
+            label:
+              basic: yes
+              content: 'ms'
+            labelPosition: 'right'
+            onChange: set_duration
+            value: duration
             style: width: '70px'
           }
-    %Tab{
-      panes: [
-        {
-          menuItem: 'Changes'
-          render: ->
-            %Tab.Pane
-              %Changes{ step, step_index }
-        }
-        {
-          menuItem: 'Shorthand'
-          render: ->
-            %Tab.Pane
-              %Shorthand{ step, step_index }
-        }
-      ]
-    }
+        %Field{ inline: yes }
+          %label Easing
+          %Dropdown.tiny{
+            onChange: set_easing
+            value: easing
+            options: easing_options
+            scrolling: yes
+            upward: yes
+          }
+        = if contains easing, 'Elastic'
+          %Field{ inline: yes }
+            %label Elasticity
+            %Input{
+              onChange: set_elasticity
+              value: elasticity
+              style: width: '70px'
+            }
+      %Tab{
+        panes: [
+          {
+            menuItem: 'Changes'
+            render: ->
+              %Tab.Pane
+                %Changes{ step, step_index }
+          }
+          {
+            menuItem: 'Shorthand'
+            render: ->
+              %Tab.Pane
+                %Shorthand{ step, step_index }
+          }
+        ]
+      }
 AnimationStep = connect(
   null
   (dispatch, {step_index}) ->
@@ -243,10 +280,27 @@ AnimationStep = connect(
       dispatch update_step {step_index, easing}
     set_elasticity: ({target: {value: elasticity}}) ->
       dispatch update_step {step_index, elasticity}
-    toggle_preview: ({step_index}) ->
+    toggle_preview: ->
       dispatch toggle_step_preview {step_index}
+    handle_delete: ->
+      return unless window.confirm 'Delete step?'
+
+      dispatch delete_step {step_index}
+    handle_reorder: ({target: {value: before_step_index}}) ->
+      dispatch reorder_step {step_index, before_step_index}
 ) AnimationStep
 
+Sorting = ({step_index, steps, handle_reorder}) ->
+  %select{
+    value: ''
+    onChange: handle_reorder
+  }
+    %option{ value: '' } Move to:
+    = for step, _step_index in steps when _step_index isnt step_index and _step_index isnt step_index + 1
+      %option{ value: _step_index, key: _step_index }
+        Before Step {_step_index + 1}
+    = unless step_index is steps.length - 1
+      %option{ value: 'last' } Last
 class Changes extends React.Component
   # handle_select_param: ({target: {value}}) =>
   handle_select_param: (event, {value}) =>
@@ -266,7 +320,7 @@ class Changes extends React.Component
           icon: 'plus'
           text: 'Add animated param'
           options:
-            for {name, value} in start_args
+            for {name, value, type} in start_args when type isnt 'boolean'
               text: dashed_to_label name
               value: name
           onChange: @handle_select_param
@@ -275,7 +329,18 @@ class Changes extends React.Component
       %ChangedArgs{ step, step_index }
 Changes = connect(
   (state) ->
-    start_args: get_mixin_args state
+    start_args: do ->
+      args = get_mixin_args state
+      {params} = get_current_mixin state
+      args.map (arg) ->
+        {name} = arg
+
+        extended arg,
+          type:
+            find(
+              params
+              {name}
+            ).type
   (dispatch, {step_index}) ->
     add_animated_param: ({name}) ->
       dispatch update_step_arg {step_index, name}

@@ -1,6 +1,7 @@
 - delay/offset/non-sequential
 - auto-open control (eg color) when choosing animated param
 - opacity control in color picker (redo some of it using semantic-ui-react?)
+  - lightness? what's the difference from value?
 - reset mixin
 - add more patterns
 - export animation JS
@@ -9,13 +10,11 @@
 - UI transitions?
 - choose pattern include previews
   - group by blend mode/normal
-- delete/reorder/insert-before step?
 - document animation
 - shorthand for background-position/-size?
 - interface for animating position?
 - UI controls based on type
   - boolean choose True/False
-  - don't include booleans (any others?) in list of animatable params
 - package and document (incl link to sassdoc) mixins
   - change website dependency to package rather than file:../
   - same for react-color
@@ -26,11 +25,12 @@
 - error messages when server fails to render sass
 - make SCSS/CSS editable?
 - make anime depend on tinycolor2?
-- different styles of color transitions (eg darker)?
+- different styles of color transitions (eg darker)? what does it do currently? animate r, g, b, a separately? would animating h, s, v/l look different?
 - mobile view
 - link to original pattern
 - measure frame rate
   - how much does reading current css val affect it? allow to specify whether to animate using current val (to allow simultaneous animations) or start val (to avoid checking current val)?
+  - re-enable updating slider - optimize react re-render time to up frame rate?
 - bundle size
 - step styling - Preview/duration spacing
 - hearts sizing
@@ -51,6 +51,8 @@
 - shake (ie easing ends where it starts)?
 - allow to use up/down arrow keys to adjust input values?
 - disable things/indicate loading while waiting for server to render sass?
+  - cached (server-side) initial css?
+  - batch step calls?
 - support relative units when animating gradients?
 - is HSV calculation funky in color picker?
 - preview button weirdness - says preview checked but can drag around timeline and doesn't uncheck
@@ -59,4 +61,4 @@
 - animation steps don't update corresponding params when mixin arg changed
 - should reset to customize tab when new pattern selected?
 - animations should fail gracefully on browsers that don't support gradients
-- cumulative versions of sharp-*()? ie specify additional offset of each stop
+  - check them cross-browser

@@ -79,6 +79,7 @@ class App_ extends React.Component
     }
     .then ({sass, css}) ->
       _update_step {step_index, sass, css}
+      extend step, {sass, css}
       step_css_props =
         parse_css_props {css}
       fromPairs(
