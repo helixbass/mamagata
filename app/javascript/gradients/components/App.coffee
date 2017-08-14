@@ -23,7 +23,7 @@ import parse_css_props from '../helpers/parse_css_props'
 import extend from '../helpers/extend'
 import extended from '../helpers/extended'
 import isEmpty from 'lodash/isEmpty'
-import {Segment, Tab} from 'semantic-ui-react'
+import {Segment, Tab, Message, Icon} from 'semantic-ui-react'
 {Pane} = Tab
 import anime from 'animejs'
 import 'animate-backgrounds/animate-backgrounds.anime'
@@ -206,6 +206,7 @@ Loaded = ({current_mixin, mixins, handle_seek, progress}) ->
     %SaveButton
     %Segment{ vertical: true }
       %SelectMixin{ mixins, current_mixin }
+      %MixinSource{ current_mixin }
     %Tab{
       menu:
         secondary: yes
@@ -230,3 +231,14 @@ Loaded = ({current_mixin, mixins, handle_seek, progress}) ->
         }
       ]
     }
+
+MixinSource = ({current_mixin: {source_url}}) ->
+  return null unless source_url
+
+  .(has
+    fontSize: '.8em'
+    marginBottom: '-1em'
+  )
+    %span.(has color: '#888')
+      Source:
+    %a{ href: source_url }^= source_url
