@@ -1,6 +1,7 @@
 import {connect} from 'react-redux'
 import {css as has} from 'glamor'
 import {contains} from 'underscore.string'
+import deep_equal from 'deep-equal'
 import get_mixin_args from '../selectors/get_mixin_args'
 import get_animation_state from '../selectors/get_animation_state'
 import get_animation_steps from '../selectors/get_animation_steps'
@@ -124,20 +125,28 @@ Steps = ({add_step}) ->
     }
     %AnimationSteps
 
+running_class = has
+  backgroundColor: 'rgba(0, 255, 0, 0.3)'
 AnimationSteps = ({steps, toggle_step}) ->
   %Accordion{
     exclusive: no
     panels:
       for step, step_index in steps
-        {active=yes} = step
+        {active=yes, running=no} = step
         {
-          title: "Step #{step_index + 1}"
+          title:
+            %span.(
+              has
+                transition: 'all .2s'
+              "#{running_class}": running
+            ) Step {step_index + 1}
           content:
             %Collapse.(has
               transition: 'height 150ms ease-out'
             ){ isOpen: active }
               %AnimationStep{ step, step_index, steps }
           active
+          key: "#{step_index}"
         }
     onTitleClick: (event, step_index) ->
       toggle_step {step_index}
@@ -226,51 +235,8 @@ class AnimationStep extends React.Component
         checked: preview
       }
       = %Sorting{ step_index, steps, @handle_reorder } if sorting
-      %Form{ size: 'tiny' }
-        %Field{ inline: yes }
-          %label Duration
-          %Input{
-            label:
-              basic: yes
-              content: 'ms'
-            labelPosition: 'right'
-            onChange: set_duration
-            value: duration
-            style: width: '70px'
-          }
-        %Field{ inline: yes }
-          %label Easing
-          %Dropdown.tiny{
-            onChange: set_easing
-            value: easing
-            options: easing_options
-            scrolling: yes
-            upward: yes
-          }
-        = if contains easing, 'Elastic'
-          %Field{ inline: yes }
-            %label Elasticity
-            %Input{
-              onChange: set_elasticity
-              value: elasticity
-              style: width: '70px'
-            }
-      %Tab{
-        panes: [
-          {
-            menuItem: 'Changes'
-            render: ->
-              %Tab.Pane
-                %Changes{ step, step_index }
-          }
-          {
-            menuItem: 'Shorthand'
-            render: ->
-              %Tab.Pane
-                %Shorthand{ step, step_index }
-          }
-        ]
-      }
+      %StepForm{ set_duration, duration, set_easing, easing, easing_options, set_elasticity, elasticity }
+      %StepTabs{ step, step_index }
 AnimationStep = connect(
   null
   (dispatch, {step_index}) ->
@@ -290,6 +256,75 @@ AnimationStep = connect(
       dispatch reorder_step {step_index, before_step_index}
 ) AnimationStep
 
+class StepTabs extends React.Component
+  shouldComponentUpdate: (nextProps) ->
+    {step: {changed_args} = {}} = @props # TODO: this'll have to be updated once other tab has exported JS
+
+    # TODO: use deep equal helper?
+    return yes if nextProps.step?.changed_args?.length isnt changed_args?.length
+    return no unless changed_args
+    for changed_arg, index in changed_args
+      next_changed_arg = nextProps.step.changed_args[index]
+      return yes if changed_arg.name  isnt next_changed_arg.name
+      return yes if changed_arg.value isnt next_changed_arg.value
+    no
+  render: ->
+    {step, step_index} = @props
+
+    %Tab{
+      panes: [
+        {
+          menuItem: 'Changes'
+          render: ->
+            %Tab.Pane
+              %Changes{ step, step_index }
+        }
+        {
+          menuItem: 'Shorthand'
+          render: ->
+            %Tab.Pane
+              %Shorthand{ step, step_index }
+        }
+      ]
+    }
+
+class StepForm extends React.Component
+  shouldComponentUpdate: (nextProps) ->
+    return yes for prop in ['duration', 'easing', 'elasticity'] when @props[prop] isnt nextProps[prop]
+    no
+  render: ->
+    {set_duration, duration, set_easing, easing, easing_options, set_elasticity, elasticity} = @props
+
+    %Form{ size: 'tiny' }
+      %Field{ inline: yes }
+        %label Duration
+        %Input{
+          label:
+            basic: yes
+            content: 'ms'
+          labelPosition: 'right'
+          onChange: set_duration
+          value: duration
+          style: width: '70px'
+        }
+      %Field{ inline: yes }
+        %label Easing
+        %Dropdown.tiny{
+          onChange: set_easing
+          value: easing
+          options: easing_options
+          scrolling: yes
+          upward: yes
+        }
+      = if contains easing, 'Elastic'
+        %Field{ inline: yes }
+          %label Elasticity
+          %Input{
+            onChange: set_elasticity
+            value: elasticity
+            style: width: '70px'
+          }
+
 Sorting = ({step_index, steps, handle_reorder}) ->
   %select{
     value: ''
@@ -307,6 +342,12 @@ class Changes extends React.Component
     {add_animated_param} = @props
 
     add_animated_param name: value
+  shouldComponentUpdate: (nextProps) ->
+    return yes unless @props.step_index is nextProps.step_index
+    return yes unless deep_equal @props.start_args, nextProps.start_args
+    return yes unless deep_equal @props.step?.changed_args, nextProps.step?.changed_args
+    no
+
   render: ->
     {step, step_index, start_args} = @props
 

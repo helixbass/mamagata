@@ -1,4 +1,4 @@
-import get_saved from './get_saved'
+import get_saved, {clear_cache} from './get_saved'
 import find from 'lodash/find'
 
 export default (data) ->
@@ -19,3 +19,5 @@ export default (data) ->
 
   localStorage.setItem 'saved',
     JSON.stringify updated
+
+  do clear_cache

@@ -24,7 +24,6 @@ import extend from '../helpers/extend'
 import extended from '../helpers/extended'
 import isEmpty from 'lodash/isEmpty'
 import {Segment, Tab, Message, Icon} from 'semantic-ui-react'
-{Pane} = Tab
 import anime from 'animejs'
 import 'animate-backgrounds/animate-backgrounds.anime'
 import find from 'lodash/find'
@@ -33,6 +32,8 @@ import defer from 'lodash/defer'
 import '../sass/reset.scss'
 import '../sass/app.sass'
 import 'semantic-ui-css/semantic.min.css'
+import Perf from 'react-addons-perf'
+window.Perf = Perf
 
 export default class App extends React.Component
   componentDidMount: ->
@@ -102,6 +103,10 @@ class App_ extends React.Component
       props = await @target_props {step, prev_step, step_index, steps, _update_step, current_mixin}
       timeline.add {
         targets, duration, easing, elasticity
+        # begin: do (step_index) -> ->
+        #   _update_step {step_index, running: yes}
+        # complete: do (step_index) -> ->
+        #   _update_step {step_index, running: no}
         props...
         # @target_props({step})...
       }
@@ -241,4 +246,6 @@ MixinSource = ({current_mixin: {source_url}}) ->
   )
     %span.(has color: '#888')
       Source:
-    %a{ href: source_url }^= source_url
+    %a{ href: source_url }^
+      = source_url
+        .replace /// ^ https?:// ///, ''
