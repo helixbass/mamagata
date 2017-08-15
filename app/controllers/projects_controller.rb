@@ -2,6 +2,9 @@ class ProjectsController < ApplicationController
   def gradients
   end
 
+  def jsxy
+  end
+
   def gradients_mixins_scss
     contents = File.read(Rails.root.join('..', 'sass-gradient-patterns', '_gradient_patterns.scss'))
     render json: {contents: contents}
