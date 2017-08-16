@@ -52,6 +52,6 @@ append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "vendor/bund
 
 namespace :deploy do
   before 'check:linked_files', 'puma:config'
-  before 'check:linked_files', 'puma:nginx_config'
+  # before 'check:linked_files', 'puma:nginx_config'
   before 'puma:smart_restart', 'nginx:restart'
 end
