@@ -18,7 +18,7 @@
     "coffee-jsxy-loader": "github:helixbass/coffee-loader#82a7cd7",
     "coffee-loader": "^0.7.3",
     "coffee-script": "^1.12.6",
-    "coffeescript-jsxy": "github:helixbass/copheescript#jsx2_os",
+    "coffeescript-jsxy": "github:helixbass/coffeescript-jsxy",
     "compression-webpack-plugin": "^0.4.0",
     "css-loader": "^0.28.4",
     "deep-equal": "^1.0.1",
