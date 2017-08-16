@@ -37,7 +37,10 @@ require "capistrano/rails/migrations"
 require 'capistrano/nginx'
 require 'capistrano/puma'
 require 'capistrano/puma/nginx'
-require 'capistrano/upload-config'
+# require 'capistrano/upload-config'
+install_plugin Capistrano::Puma
+install_plugin Capistrano::Puma::Jungle
+install_plugin Capistrano::Puma::Nginx
 
 # Load custom tasks from `lib/capistrano/tasks` if you have any defined
 Dir.glob("lib/capistrano/tasks/*.rake").each { |r| import r }

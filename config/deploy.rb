@@ -12,7 +12,10 @@ set :use_sudo, false
 # set :puma_bind, "unix://#{shared_path}/tmp/sockets/#{fetch(:application)}-puma.sock"
 
 # set :rbenv_type, :user
+# set :rbenv_path, '/usr/bin/rbenv'
+set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} /usr/bin/rbenv exec"
 set :keep_releases, 5
+set :user, 'jrosse'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
@@ -28,11 +31,11 @@ set :deploy_to, "/home/#{fetch(:user)}/deploy/#{fetch(:application)}"
 # set :format_options, command_output: true, log_file: "log/capistrano.log", color: :auto, truncate: :auto
 
 # Default value for :pty is false
-set :pty, true
+# set :pty, true
 
 # Default value for :linked_files is []
 # append :linked_files, "config/database.yml", "config/secrets.yml"
-append :linked_files, "config/database.yml", "config/secrets.yml", "config/puma.rb"
+append :linked_files, "config/secrets.yml", "config/puma.rb"
 
 # Default value for linked_dirs is []
 # append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
