@@ -6,7 +6,7 @@ class ProjectsController < ApplicationController
   end
 
   def gradients_mixins_scss
-    contents = File.read(Rails.root.join('..', 'sass-gradient-patterns', '_gradient_patterns.scss'))
+    contents = File.read(Rails.root.join('node_modules', 'sass-gradient-patterns', '_gradient_patterns.scss'))
     render json: {contents: contents}
   end
 
@@ -35,7 +35,7 @@ class ProjectsController < ApplicationController
     engine = Sass::Engine.new(
       sass,
       syntax: :scss,
-      load_paths: [Rails.root.join('..', 'sass-gradient-patterns')]
+      load_paths: [Rails.root.join('node_modules', 'sass-gradient-patterns')]
     )
     engine.render
   end

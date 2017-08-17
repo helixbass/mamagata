@@ -61,3 +61,4 @@
 - should reset to customize tab when new pattern selected?
 - animations should fail gracefully on browsers that don't support gradients
   - check them cross-browser
+- search patterns by name when choosing?
