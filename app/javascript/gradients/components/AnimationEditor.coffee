@@ -18,10 +18,11 @@ import Collapse from 'react-css-collapse'
 import {play_animation, pause_animation, reset_animation, add_animation_step, set_animation_step_shorthand, update_step_arg, delete_step_arg, delete_step, reorder_step, toggle_step_preview, update_step, toggle_animation_step, update_loop as _update_loop} from '../actions'
 import find from 'lodash/find'
 import fromPairs from 'lodash/fromPairs'
+import defer from 'lodash/defer'
 
-AnimationEditor = ({animation_state, play, pause, reset, add_step, progress, handle_seek}) ->
+AnimationEditor = ({animation_state, play, pause, reset, add_step, animation, handle_seek}) ->
   .animation-editor
-    %Controls{ animation_state, play, pause, reset, progress, handle_seek }
+    %Controls{ animation_state, play, pause, reset, animation, handle_seek }
     %Steps{ add_step }
 export default AnimationEditor = connect(
   (state) ->
@@ -37,13 +38,13 @@ export default AnimationEditor = connect(
       dispatch do add_animation_step
 ) AnimationEditor
 
-Controls = ({animation_state, play, pause, reset, progress, handle_seek}) ->
+Controls = ({animation_state, play, pause, reset, animation, handle_seek}) ->
   %Segment{ vertical: yes }
     %div
       %Group
         %ResetButton{ animation_state, reset }
         %PlayButton{ animation_state, play, pause }
-      %Progress{ animation_progress: progress, onChange: handle_seek, disabled: 'disabled' is animation_state }
+      %Progress{ animation, onChange: handle_seek, disabled: 'disabled' is animation_state }
     %LoopControl
 
 LoopControl = ({update_loop, _loop}) ->
@@ -86,12 +87,27 @@ LoopControl = connect(
       )
 ) LoopControl
 
-Progress = ({animation_progress, onChange, disabled}) ->
-  %input{
-    type: 'range'
-    value: animation_progress ? 0
-    onChange, disabled
-  }
+class Progress extends React.Component
+  constructor: (props) ->
+    super props
+
+    @state =
+      progress: 0
+  componentWillReceiveProps: ({animation}) ->
+    {progress = 0} = animation ? {}
+    @setState {progress} unless progress is @state.progress
+    animation?.update ?= ({progress}) =>
+      # #   set_progress {progress}
+      defer => @setState {progress}
+  render: ->
+    {onChange, disabled} = @props
+    {progress} = @state
+
+    %input{
+      type: 'range'
+      value: progress ? 0
+      onChange, disabled
+    }
 
 ResetButton = ({animation_state, reset}) ->
   %Button{

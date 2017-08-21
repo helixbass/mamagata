@@ -50,6 +50,8 @@ reset_animation = switchingReducer
     yes
   update_step: (state, {duration, easing, elasticity}) ->
     duration? or easing? or elasticity?
+  reset_animation: ->
+    yes
   did_reset_animation: ->
     no
 , default: no

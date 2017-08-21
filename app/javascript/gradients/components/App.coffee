@@ -28,7 +28,6 @@ import anime from 'animejs'
 import 'animate-backgrounds/animate-backgrounds.anime'
 import find from 'lodash/find'
 import fromPairs from 'lodash/fromPairs'
-import defer from 'lodash/defer'
 import '../sass/reset.scss'
 import '../sass/app.sass'
 import 'semantic-ui-css/semantic.min.css'
@@ -94,9 +93,6 @@ class App_ extends React.Component
       autoplay: no
       complete: ->
         do completed
-      update: ({progress}) =>
-      #   set_progress {progress}
-        # defer => @setState {progress}
     prev_step = null
     for step, step_index in steps
       {duration, easing, elasticity} = step
@@ -155,7 +151,7 @@ class App_ extends React.Component
     seek time: duration * value / 100
   render: ->
     {current_mixin, mixins, preview_step_css, animation_state} = @props
-    {progress} = @state
+    {animation} = @state
 
     .app
       .preview.(has
@@ -164,7 +160,7 @@ class App_ extends React.Component
         # preview_step_css...
       ){ style: preview_step_css unless animation_state in ['playing', 'paused', 'completed']}
         = if current_mixin and not isEmpty mixins
-          %Loaded{ current_mixin, mixins, @handle_seek, progress }
+          %Loaded{ current_mixin, mixins, @handle_seek, animation }
          else
           .loading
 App_ = connect(
@@ -195,7 +191,7 @@ App_ = connect(
       dispatch do sought_animation
 ) App_
 
-Loaded = ({current_mixin, mixins, handle_seek, progress}) ->
+Loaded = ({current_mixin, mixins, handle_seek, animation}) ->
   .loaded.(has
     position: 'absolute'
     right: 10
@@ -232,7 +228,7 @@ Loaded = ({current_mixin, mixins, handle_seek, progress}) ->
             icon: 'video play'
             content: 'Animate'
           render: ->
-            %AnimationEditor{ mixin: current_mixin, handle_seek, progress }
+            %AnimationEditor{ mixin: current_mixin, handle_seek, animation }
         }
       ]
     }
