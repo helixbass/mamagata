@@ -7,6 +7,7 @@ import MixinEditor from './MixinEditor'
 import AnimationEditor from './AnimationEditor'
 import SelectMixin from './SelectMixin'
 import SaveButton from './SaveButton'
+import HelpButton from './HelpButton'
 import LoadSaved from './LoadSaved'
 import {set_mixins, set_current_mixin, completed_animation, did_reset_animation as _did_reset_animation, seek_animation, sought_animation, update_step} from '../actions'
 import get_current_mixin from '../selectors/get_current_mixin'
@@ -208,8 +209,9 @@ Loaded = ({current_mixin, mixins, handle_seek, animation}) ->
     maxHeight: '90%'
     overflowY: 'auto'
   )
-    %LoadSaved
+    %HelpButton
     %SaveButton
+    %LoadSaved
     %Segment{ vertical: true }
       %SelectMixin{ mixins, current_mixin }
       %MixinSource{ current_mixin }

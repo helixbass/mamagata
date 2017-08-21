@@ -32,11 +32,15 @@ class ProjectsController < ApplicationController
   end
 
   def render_single_sass sass
-    engine = Sass::Engine.new(
-      sass,
-      syntax: :scss,
-      load_paths: [Rails.root.join('node_modules', 'sass-gradient-patterns')]
-    )
-    engine.render
+    Rails.cache.fetch "rendered_gradient_pattern_sass #{
+      File.mtime Rails.root.join('node_modules', 'sass-gradient-patterns', '_gradient_patterns.scss')
+    } #{sass}" do
+      engine = Sass::Engine.new(
+        sass,
+        syntax: :scss,
+        load_paths: [Rails.root.join('node_modules', 'sass-gradient-patterns')]
+      )
+      engine.render
+    end
   end
 end

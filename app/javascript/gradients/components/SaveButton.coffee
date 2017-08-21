@@ -34,12 +34,7 @@ class SaveButton extends BaseComponent
       open: modal_open
       onClose: @handle_close
       trigger:
-        %Button.(has
-          position: 'absolute'
-          top: 5
-          right: 5
-          zIndex: 100
-        ){
+        %Button{
           icon: 'save'
           content: 'Save'
           onClick: @handle_open

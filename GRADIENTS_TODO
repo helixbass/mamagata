@@ -47,7 +47,6 @@
 - how to handle connected/relative defaults?
 - shake (ie easing ends where it starts)?
 - allow to use up/down arrow keys to adjust input values?
-- cached (server-side) initial css?
 - batch step calls?
 - support relative units when animating gradients?
 - is HSV calculation funky in color picker?
@@ -63,4 +62,5 @@
 - adjust some previews to show better: wave, svg logo
 - angle changes when animating eg chard stripe width (to top left, to top right become 315deg, 45deg)
   - and first transparent stop doesn't change, is this related?
-- why doesn't animating scale of finger wave work?
+- why doesn't animating scale of finger wave or drops work?
+- make order of which gallery comes up first (and just overall random order?) random when choosing pattern
