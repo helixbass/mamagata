@@ -4,7 +4,6 @@
 - opacity control in color picker (redo some of it using semantic-ui-react?)
   - lightness? what's the difference from value?
 - reset mixin
-- add more patterns
 - export animation JS
 - shorthand editor for animations? or just JS export?
 - choose animation engine?
@@ -63,4 +62,3 @@
 - angle changes when animating eg chard stripe width (to top left, to top right become 315deg, 45deg)
   - and first transparent stop doesn't change, is this related?
 - why doesn't animating scale of finger wave or drops work?
-- make order of which gallery comes up first (and just overall random order?) random when choosing pattern

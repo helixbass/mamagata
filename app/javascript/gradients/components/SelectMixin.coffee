@@ -6,6 +6,7 @@ import dashed_to_label from '../helpers/dashed_to_label'
 import parse_css_props from '../helpers/parse_css_props'
 import BaseComponent from './BaseComponent'
 import groupBy from 'lodash/groupBy'
+import sortBy from 'lodash/sortBy'
 import {contains} from 'underscore.string'
 import {Form, Dropdown, Input, Modal, Card, Header} from 'semantic-ui-react'
 {Field} = Form
@@ -48,6 +49,17 @@ class ChoosePattern extends BaseComponent
 
     handle_change mixin_name
     @setState q: ''
+  grouped: (mixins) ->
+    sortBy(
+      {group_name, group} for group_name, group of (
+        groupBy mixins, ({group}) -> group if group in ['lea-verou', 'blend-modes']
+      )
+      ({group_name}) ->
+        switch group_name
+          when 'lea-verou'   then 1
+          when 'blend-modes' then 2
+          else                    3
+    )
   render: ->
     {mixins, current_mixin, choosing, hide_patterns} = @props
     {q} = @state
@@ -74,10 +86,11 @@ class ChoosePattern extends BaseComponent
       %Content{ scrolling: yes }
         %Description
           = %PatternGroup{
-            group, group_name, q
+            group: do group.reverse
+            group_name, q
             @handle_change, hide_patterns
             key: group_name
-          } for group_name, group of groupBy mixins, ({group}) -> group if group in ['lea-verou', 'blend-modes']
+          } for {group_name, group} in @grouped mixins
 
 PatternGroup = ({group, group_name, handle_change, hide_patterns, q}) ->
   filtered =
