@@ -27,8 +27,6 @@
   - publish anime-csshooks?
 - different styles of color transitions (eg darker)? what does it do currently? animate r, g, b, a separately? would animating h, s, v/l look different?
 - mobile view
-- measure frame rate
-  - re-enable updating slider - optimize react re-render time to up frame rate?
 - bundle size
 - step styling - Preview/duration spacing
 - hearts sizing
@@ -49,9 +47,8 @@
 - how to handle connected/relative defaults?
 - shake (ie easing ends where it starts)?
 - allow to use up/down arrow keys to adjust input values?
-- disable things/indicate loading while waiting for server to render sass?
-  - cached (server-side) initial css?
-  - batch step calls?
+- cached (server-side) initial css?
+- batch step calls?
 - support relative units when animating gradients?
 - is HSV calculation funky in color picker?
 - preview button weirdness - says preview checked but can drag around timeline and doesn't uncheck
@@ -63,3 +60,7 @@
   - check them cross-browser
 - demos
 - What's this page about? Modal explaining usage and links to libs
+- adjust some previews to show better: wave, svg logo
+- angle changes when animating eg chard stripe width (to top left, to top right become 315deg, 45deg)
+  - and first transparent stop doesn't change, is this related?
+- why doesn't animating scale of finger wave work?

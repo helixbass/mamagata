@@ -2,6 +2,7 @@ import {Provider, connect} from 'react-redux'
 import {css as has} from 'glamor'
 import parse_scss from '../helpers/parse_scss'
 import random_obj_prop from '../helpers/random_obj_prop'
+import Loading from './Loading'
 import MixinEditor from './MixinEditor'
 import AnimationEditor from './AnimationEditor'
 import SelectMixin from './SelectMixin'
@@ -30,6 +31,7 @@ import find from 'lodash/find'
 import fromPairs from 'lodash/fromPairs'
 import '../sass/reset.scss'
 import '../sass/app.sass'
+import '../sass/loader.css'
 import 'semantic-ui-css/semantic.min.css'
 import Perf from 'react-addons-perf'
 window.Perf = Perf
@@ -55,6 +57,7 @@ class App_ extends React.Component
     super()
     @state =
       animation: null
+      loading: no
   prev_arg: ({arg, step_index, steps}) ->
     {name} = arg
     for {changed_args} in steps[...step_index] by -1
@@ -111,6 +114,7 @@ class App_ extends React.Component
     @setState
       animation: timeline
       progress: 0
+      loading: no
 
   componentWillReceiveProps: ({animation_state, animation_seek, sought, steps, completed, _update_step, reset_animation, did_reset_animation, loop: _loop, current_mixin}) ->
     {animation_state: old_state} = @props
@@ -138,7 +142,7 @@ class App_ extends React.Component
       document.querySelector '.app'
       .style.cssText = ''
 
-      @setState(animation: null, progress: 0) if animation
+      @setState(animation: null, progress: 0, loading: yes) if animation
       @create_animation {steps, completed, _update_step, loop: _loop, current_mixin} if current_mixin?.css
       # set_progress progress: 0
       do did_reset_animation
@@ -151,7 +155,7 @@ class App_ extends React.Component
     seek time: duration * value / 100
   render: ->
     {current_mixin, mixins, preview_step_css, animation_state} = @props
-    {animation} = @state
+    {animation, loading} = @state
 
     .app
       .preview.(has
@@ -162,7 +166,8 @@ class App_ extends React.Component
         = if current_mixin and not isEmpty mixins
           %Loaded{ current_mixin, mixins, @handle_seek, animation }
          else
-          .loading
+          %Loading
+        = %Loading if loading
 App_ = connect(
   (state) ->
     current_mixin:    get_current_mixin    state
