@@ -132,8 +132,13 @@ PlayButton = ({animation_state, play, pause}) ->
   }
 
 Steps = ({add_step}) ->
-  %Segment{ vertical: yes }
-    %Button{
+  %Segment.(has position: 'relative'){ vertical: yes }
+    %Button.(has
+      position: 'absolute'
+      top: 5
+      right: 1
+      zIndex: 500
+    ){
       icon: 'plus'
       size: 'tiny'
       content: 'Add step'

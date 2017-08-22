@@ -118,7 +118,16 @@ PatternGroup = ({group, group_name, handle_change, hide_patterns, q}) ->
               gallery
         else
           'other'
-    %Card.Group{ itemsPerRow: 3 }
+    %Card.Group{
+      itemsPerRow: do ->
+        {innerWidth} = window
+        if innerWidth > 600
+          3
+        else if innerWidth > 480
+          2
+        else
+          1
+    }
       = %PatternPreview{
         mixin
         handle_change, hide_patterns
