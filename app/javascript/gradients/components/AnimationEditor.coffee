@@ -137,7 +137,7 @@ Steps = ({add_step}) ->
       position: 'absolute'
       top: 5
       right: 1
-      zIndex: 500
+      zIndex: 10
     ){
       icon: 'plus'
       size: 'tiny'
@@ -495,9 +495,24 @@ Changes = connect(
       dispatch update_step_arg {step_index, name}
 ) Changes
 
-ChangedArgs = ({step: {changed_args}, step_index}) ->
-  .changed_args
-    = %ChangedArg{ arg, step_index, key: arg.name } for arg in changed_args
+class ChangedArgs extends React.Component
+  constructor: (props) ->
+    super props
+    @state =
+      auto_open_last: no
+  componentWillReceiveProps: ({step: {changed_args}}) ->
+    auto_open_last = changed_args.length > @props.step.changed_args.length
+    @setState {auto_open_last} if @state.auto_open_last isnt auto_open_last
+  render: ->
+    {step: {changed_args}, step_index} = @props
+    {auto_open_last} = @state
+
+    .changed_args
+      = %ChangedArg{
+        arg, step_index
+        auto_open: auto_open_last and arg_index is changed_args.length - 1
+        key: arg.name
+      } for arg, arg_index in changed_args
 
 ChangedArg = connect(
   (state, {arg: {name}}) ->

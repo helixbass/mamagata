@@ -1,9 +1,9 @@
 import {css as has} from 'glamor'
-import {PhotoshopPicker} from 'react-color'
+import {SketchPicker} from 'react-color'
 import css_color_names from '../helpers/css_color_names'
 import $ from 'jquery'
 import 'jquery-color'
-import {Menu, Label, Dropdown} from 'semantic-ui-react'
+import {Menu, Label, Dropdown, Icon} from 'semantic-ui-react'
 # import 'jquery-color/jquery.color.svg-names'
 {Color, extend} = $
 extend Color.names, css_color_names
@@ -13,14 +13,14 @@ rgba_obj_from_color_str = (str) ->
   {r, g, b, a}
 
 export default class ColorInput extends React.Component
-  constructor: ({value}) ->
-    super()
+  constructor: (props) ->
+    {value, auto_open} = props
+    super props
     @state =
       color: rgba_obj_from_color_str value
-      editing: no
+      editing: !! auto_open
   handle_change_complete: (color) =>
     {onChange} = @props
-    console.log {color}
     {rgb: {r, g, b, a}, hex} = color
 
     onChange(
@@ -42,12 +42,23 @@ export default class ColorInput extends React.Component
     {color, editing} = @state
 
     if editing
-      %PhotoshopPicker{
-        color
-        onChangeComplete: @handle_change_complete
-        onClose: @toggle_editing
-        colorNames: css_color_names
-      }
+      .(has position: 'relative')
+        %Icon{
+          name: 'window close outline'
+          link: yes
+          fitted: yes
+          onClick: @toggle_editing
+          style:
+            position: 'absolute'
+            top: -20
+            right: 0
+            zIndex: 500
+        }
+        %SketchPicker{
+          color
+          onChangeComplete: @handle_change_complete
+          colorNames: css_color_names
+        }
     else
       %ColorButton{ color, value, onClick: @toggle_editing }
 

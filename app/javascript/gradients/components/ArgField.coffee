@@ -4,7 +4,7 @@ import ColorInput from './ColorInput'
 import {Message, Form, Icon} from 'semantic-ui-react'
 {Field} = Form
 
-export default ({arg: {name, value}, param, onChange, onDelete}) ->
+export default ({arg: {name, value}, param, onChange, onDelete, auto_open}) ->
   %Field
     = %Icon{
       name: 'window close outline'
@@ -19,6 +19,7 @@ export default ({arg: {name, value}, param, onChange, onDelete}) ->
         %ColorInput{
           onChange
           value
+          auto_open
         }
       else
         %DebouncedInput{

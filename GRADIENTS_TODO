@@ -1,8 +1,6 @@
 - delay/offset/non-sequential
   - set simultaneous flag when necessary
-- auto-open control (eg color) when choosing animated param
-- opacity control in color picker (redo some of it using semantic-ui-react?)
-  - lightness? what's the difference from value?
+- color picker: HSLV? color names? is HSV calculation funky?
 - reset mixin
 - export animation JS
 - shorthand editor for animations? or just JS export?
@@ -13,9 +11,6 @@
 - interface for animating position?
 - UI controls based on type
   - boolean choose True/False
-- package and document (incl link to sassdoc) mixins
-  - change website dependency to package rather than file:../
-  - same for react-color
 - website:
   - blog post
   - https for website?
@@ -27,7 +22,7 @@
   - publish anime-csshooks?
 - different styles of color transitions (eg darker)? what does it do currently? animate r, g, b, a separately? would animating h, s, v/l look different?
 - mobile view
-- bundle size
+  - color picker
 - step styling - Preview/duration spacing
 - hearts sizing
   - color darkmagenta background-color aquamarine
@@ -49,7 +44,6 @@
 - allow to use up/down arrow keys to adjust input values?
 - batch step calls?
 - support relative units when animating gradients?
-- is HSV calculation funky in color picker?
 - preview button weirdness - says preview checked but can drag around timeline and doesn't uncheck
   - and play button stays as pause button
 - initial value when adding animated param should come from prev step, not initial value
