@@ -25,6 +25,7 @@ import parse_css_props from '../helpers/parse_css_props'
 import extend from '../helpers/extend'
 import extended from '../helpers/extended'
 import isEmpty from 'lodash/isEmpty'
+import mapValues from 'lodash/mapValues'
 import {Segment, Tab, Message, Icon} from 'semantic-ui-react'
 import anime from 'animejs'
 import 'animate-backgrounds/animate-backgrounds.anime'
@@ -98,11 +99,19 @@ class App_ extends React.Component
       complete: ->
         do completed
     prev_step = null
+    add_simultaneous = do ->
+      simultaneous = steps.some ({offset}) -> offset < 0
+      (props) ->
+        return props unless simultaneous
+        mapValues props, (val, prop_name) ->
+          return val unless prop_name is 'backgroundImage'
+          "simultaneous #{val}"
     for step, step_index in steps
-      {duration, easing, elasticity} = step
-      props = await @target_props {step, prev_step, step_index, steps, _update_step, current_mixin}
+      {duration, easing, elasticity, offset} = step
+      props = add_simultaneous await @target_props {step, prev_step, step_index, steps, _update_step, current_mixin}
       timeline.add {
         targets, duration, easing, elasticity
+        offset: "#{if offset < 0 then '-' else '+'}=#{Math.abs offset}" if offset
         # begin: do (step_index) -> ->
         #   _update_step {step_index, running: yes}
         # complete: do (step_index) -> ->

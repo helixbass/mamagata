@@ -224,8 +224,8 @@ class AnimationStep extends React.Component
     handle_reorder event
     @setState sorting: no
   render: ->
-    {step, step_index, set_duration, set_easing, set_elasticity, toggle_preview, handle_delete, steps} = @props
-    {duration, easing, preview, elasticity} = step
+    {step, step_index, set_duration, set_easing, set_elasticity, toggle_preview, handle_delete, steps, set_offset, set_offset_direction} = @props
+    {duration, easing, preview, elasticity, offset, offset_from} = step
     {sorting} = @state
 
     .animation-step
@@ -251,11 +251,24 @@ class AnimationStep extends React.Component
         checked: preview
       }
       = %Sorting{ step_index, steps, @handle_reorder } if sorting
-      %StepForm{ set_duration, duration, set_easing, easing, easing_options, set_elasticity, elasticity }
+      %StepForm{ set_duration, duration, set_easing, easing, easing_options, set_elasticity, elasticity, offset, offset_from, set_offset, set_offset_direction, step_index }
       %StepTabs{ step, step_index }
 AnimationStep = connect(
   null
-  (dispatch, {step_index}) ->
+  (dispatch, {step_index, step}) ->
+    set_offset: ({target: {value: offset}}) ->
+      dispatch update_step {
+        step_index
+        offset:
+          offset * if step.offset < 0 then -1 else 1
+      }
+    set_offset_direction: (event, {value: multiplier}) ->
+      console.log {offset: step.offset, abs: Math.abs(step.offset), multiplier, _int: _int multiplier}
+      dispatch update_step {
+        step_index
+        offset:
+          Math.abs(step.offset) * _int multiplier
+      }
     set_duration: ({target: {value: duration}}) ->
       dispatch update_step {step_index, duration}
     set_easing: (event, {value: easing}) ->
@@ -306,40 +319,114 @@ class StepTabs extends React.Component
 
 class StepForm extends React.Component
   shouldComponentUpdate: (nextProps) ->
-    return yes for prop in ['duration', 'easing', 'elasticity'] when @props[prop] isnt nextProps[prop]
+    return yes for prop in ['duration', 'easing', 'elasticity', 'offset'] when @props[prop] isnt nextProps[prop]
     no
   render: ->
-    {set_duration, duration, set_easing, easing, easing_options, set_elasticity, elasticity} = @props
+    {set_duration, duration, set_easing, easing, easing_options, set_elasticity, elasticity, step_index, offset, offset_from, set_offset, set_offset_direction} = @props
 
     %Form{ size: 'tiny' }
-      %Field{ inline: yes }
-        %label Duration
-        %Input{
-          label:
-            basic: yes
-            content: 'ms'
-          labelPosition: 'right'
-          onChange: set_duration
-          value: duration
-          style: width: '70px'
-        }
-      %Field{ inline: yes }
-        %label Easing
-        %Dropdown.tiny{
-          onChange: set_easing
-          value: easing
-          options: easing_options
-          scrolling: yes
-          upward: yes
-        }
-      = if contains easing, 'Elastic'
-        %Field{ inline: yes }
-          %label Elasticity
+      %Duration{ duration, set_duration }
+      = %StartOffset{ offset, offset_from, set_offset, set_offset_direction } if step_index > 0
+      %Easing{ easing, set_easing, easing_options }
+      = %Elasticity{ elasticity, set_elasticity } if contains easing, 'Elastic'
+
+Elasticity = ({elasticity, set_elasticity}) ->
+  %Field{ inline: yes }
+    %label Elasticity
+    %Input{
+      onChange: set_elasticity
+      value: elasticity
+      style: width: '70px'
+    }
+
+Easing = ({easing, set_easing, easing_options}) ->
+  %Field{ inline: yes }
+    %label Easing
+    %Dropdown.tiny{
+      onChange: set_easing
+      value: easing
+      options: easing_options
+      scrolling: yes
+      upward: yes
+    }
+
+class StartOffset extends React.Component
+  constructor: (props) ->
+    super props
+
+    @state =
+      editing: no
+  toggle_editing: =>
+    {editing} = @state
+    @setState editing: not editing
+  render: ->
+    {offset, offset_from, set_offset, set_offset_direction} = @props
+    {editing} = @state
+
+    %Field{ inline: yes }
+      %label Start
+      = if editing
+        %span
           %Input{
-            onChange: set_elasticity
-            value: elasticity
-            style: width: '70px'
-          }
+            onChange: set_offset
+            value: Math.abs offset
+            style: width: '55px'
+          }^
+          ms
+          %Dropdown.tiny.(has
+            margin: '0 3px'
+          ){
+            value:
+              if offset < 0
+                -1
+              else
+                1
+            options: [
+              text: 'before'
+              value: -1
+            ,
+              text: 'after'
+              value: 1
+            ]
+            onChange: set_offset_direction
+          }^
+          %span
+            the previous step ends
+        
+       else
+        %Dropdown.tiny{
+          onClick: @toggle_editing
+          text:
+            "#{
+              unless offset
+                'when'
+              else
+                "#{offset}ms #{
+                  if offset > 0
+                    'after'
+                  else
+                    'before'
+                }"
+              } the previous step #{
+                  if offset_from is 'prev_end'
+                    'ends'
+                  else
+                    'starts'
+                }"
+        }
+
+Duration = ({duration, set_duration}) ->
+  %Field{ inline: yes }
+    %label Duration
+    %Input{
+      label:
+        basic: yes
+        content: 'ms'
+      labelPosition: 'right'
+      onChange: set_duration
+      value: duration
+      style: width: '70px'
+    }
 
 Sorting = ({step_index, steps, handle_reorder}) ->
   %select{

@@ -62,3 +62,4 @@
 - angle changes when animating eg chard stripe width (to top left, to top right become 315deg, 45deg)
   - and first transparent stop doesn't change, is this related?
 - why doesn't animating scale of finger wave or drops work?
+- allow to export sass for any given step?
