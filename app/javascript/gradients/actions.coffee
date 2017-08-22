@@ -104,6 +104,11 @@ set_preview_css = (css) ->
 export add_animation_step = ->
   type: 'ADD_ANIMATION_STEP'
 
+export set_animation_js = ({js}) -> {
+  type: 'SET_ANIMATION_JS'
+  js
+}
+
 export set_animation_step_shorthand = ({step_index, shorthand}) -> {
   type: 'SET_ANIMATION_STEP_SHORTHAND'
   step_index, shorthand

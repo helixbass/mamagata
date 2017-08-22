@@ -103,6 +103,11 @@ _loop = switchingReducer
     _loop
 , default: count: 4
 
+animation_js = switchingReducer
+  set_animation_js: (state, {js}) ->
+    js
+, default: ''
+
 default_step_props =
   changed_args: []
   duration: 400
@@ -242,6 +247,7 @@ export default combineReducers {
   mixin_args, mixins, current_mixin
   animation_steps, animation_state
   animation_progress, animation_seek
+  animation_js
   reset_animation, loop: _loop
   working_on_saved
 }

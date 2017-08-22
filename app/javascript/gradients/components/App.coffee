@@ -9,7 +9,7 @@ import SelectMixin from './SelectMixin'
 import SaveButton from './SaveButton'
 import HelpButton from './HelpButton'
 import LoadSaved from './LoadSaved'
-import {set_mixins, set_current_mixin, completed_animation, did_reset_animation as _did_reset_animation, seek_animation, sought_animation, update_step} from '../actions'
+import {set_mixins, set_current_mixin, completed_animation, did_reset_animation as _did_reset_animation, set_animation_js, seek_animation, sought_animation, update_step} from '../actions'
 import get_current_mixin from '../selectors/get_current_mixin'
 import get_mixins from '../selectors/get_mixins'
 import get_preview_step_css from '../selectors/get_preview_step_css'
@@ -24,6 +24,7 @@ import get_sass_and_css from '../helpers/get_sass_and_css'
 import parse_css_props from '../helpers/parse_css_props'
 import extend from '../helpers/extend'
 import extended from '../helpers/extended'
+import {contains} from 'underscore.string'
 import isEmpty from 'lodash/isEmpty'
 import mapValues from 'lodash/mapValues'
 import {Segment, Tab, Message, Icon} from 'semantic-ui-react'
@@ -90,7 +91,7 @@ class App_ extends React.Component
       fromPairs(
         [name, val] for name, val of step_css_props when start_css_props[name] isnt val
       )
-  create_animation: ({steps, completed, _update_step, loop: _loop, current_mixin}) ->
+  create_animation: ({steps, completed, _update_step, _set_animation_js, loop: _loop, current_mixin}) ->
     targets = '.app'
     timeline = anime.timeline
       direction: 'alternate' if _loop
@@ -98,6 +99,17 @@ class App_ extends React.Component
       autoplay: no
       complete: ->
         do completed
+    js = """
+      anime
+      .timeline({#{
+        if _loop
+          """
+          \n  direction: 'alternate',
+          """
+        else '' }
+        loop: #{_loop?.count * 2},
+      })
+    """
     prev_step = null
     add_simultaneous = do ->
       simultaneous = steps.some ({offset}) -> offset < 0
@@ -109,9 +121,11 @@ class App_ extends React.Component
     for step, step_index in steps
       {duration, easing, elasticity, offset} = step
       props = add_simultaneous await @target_props {step, prev_step, step_index, steps, _update_step, current_mixin}
+      offset_str =
+        "#{if offset < 0 then '-' else '+'}=#{Math.abs offset}" if offset
       timeline.add {
         targets, duration, easing, elasticity
-        offset: "#{if offset < 0 then '-' else '+'}=#{Math.abs offset}" if offset
+        offset: offset_str
         # begin: do (step_index) -> ->
         #   _update_step {step_index, running: yes}
         # complete: do (step_index) -> ->
@@ -119,14 +133,39 @@ class App_ extends React.Component
         props...
         # @target_props({step})...
       }
+      js += """
+      \n.add({
+        targets: '.selector',#{
+          if offset
+            """
+            \n  offset: '#{offset_str}',
+            """
+          else ''
+        }
+        duration: #{duration},
+        easing: '#{easing}',
+        #{
+          if contains easing, 'Elastic'
+            "\n  elasticity: #{elasticity},"
+          else ''
+        }
+        #{
+          for prop_name, prop_val of props
+            """
+            \n  #{prop_name}: '#{prop_val}',
+            """
+        }
+      })
+      """
       prev_step = step
     console.log {timeline}
+    _set_animation_js {js}
     @setState
       animation: timeline
       progress: 0
       loading: no
 
-  componentWillReceiveProps: ({animation_state, animation_seek, sought, steps, completed, _update_step, reset_animation, did_reset_animation, loop: _loop, current_mixin}) ->
+  componentWillReceiveProps: ({animation_state, animation_seek, sought, steps, completed, _update_step, _set_animation_js, reset_animation, did_reset_animation, loop: _loop, current_mixin}) ->
     {animation_state: old_state} = @props
     {animation} = @state
 
@@ -153,7 +192,7 @@ class App_ extends React.Component
       .style.cssText = ''
 
       @setState(animation: null, progress: 0, loading: yes) if animation
-      @create_animation {steps, completed, _update_step, loop: _loop, current_mixin} if current_mixin?.css
+      @create_animation {steps, completed, _update_step, _set_animation_js, loop: _loop, current_mixin} if current_mixin?.css
       # set_progress progress: 0
       do did_reset_animation
   handle_seek: ({target: {value}}) =>
@@ -200,6 +239,8 @@ App_ = connect(
     #   dispatch set_animation_progress {progress}
     _update_step: ({step_index, props...}) ->
       dispatch update_step {step_index, props...}
+    _set_animation_js: ({js}) ->
+      dispatch set_animation_js {js}
     seek: ({time}) ->
       dispatch seek_animation {time}
     sought: ->

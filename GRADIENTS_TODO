@@ -1,6 +1,6 @@
 - delay/offset/non-sequential
   - set simultaneous flag when necessary
-- color picker: HSLV? color names? is HSV calculation funky?
+- color picker: click to revert back to current color? HSLV? color names? is HSV calculation funky?
 - reset mixin
 - export animation JS
 - shorthand editor for animations? or just JS export?
