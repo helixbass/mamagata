@@ -8,7 +8,11 @@ import {Dropdown, Icon} from 'semantic-ui-react'
 LoadSaved = ({load_saved}) ->
   return null unless (saved = do get_saved)?.length
 
-  %Dropdown.tiny{
+  %Dropdown.tiny.(has
+    marginRight: '0 !important!'
+    paddingLeft: '.8em !important'
+    paddingRight: '.5em !important'
+  ){
     onChange: load_saved
     value: ''
     button: yes

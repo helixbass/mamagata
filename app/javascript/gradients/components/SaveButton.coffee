@@ -34,7 +34,10 @@ class SaveButton extends BaseComponent
       open: modal_open
       onClose: @handle_close
       trigger:
-        %Button{
+        %Button.(has
+          paddingLeft: '1.3em !important'
+          paddingRight: '1.3em !important'
+        ){
           icon: 'save'
           content: 'Save'
           onClick: @handle_open

@@ -1,9 +1,13 @@
 import {Modal, Header, Button, Message} from 'semantic-ui-react'
+import {css as has} from 'glamor'
 
 export default ->
   %Modal{
     trigger:
-      %Button{
+      %Button.(has
+        paddingLeft: '1.3em !important'
+        paddingRight: '1.3em !important'
+      ){
         icon: 'question circle'
         content: 'Huh?'
         size: 'tiny'
