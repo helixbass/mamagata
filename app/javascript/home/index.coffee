@@ -47,7 +47,7 @@ Home = ->
         %List.Content
           %a{ href: 'http://helixbass.net' } helixbass.net
       %List.Item
-        %List.Icon{ name: 'github' }
+        %List.Icon.(has fontSize: '1.1em !important'){ name: 'github' }
         %List.Content
           %a{ href: 'https://github.com/helixbass' } helixbass
       %List.Item
