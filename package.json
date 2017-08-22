@@ -18,7 +18,7 @@
     "coffee-jsxy-loader": "^0.1.0",
     "coffee-loader": "^0.7.3",
     "coffee-script": "^1.12.6",
-    "coffeescript-jsxy": "^0.1.3",
+    "coffeescript-jsxy": "^0.1.4",
     "compression-webpack-plugin": "^0.4.0",
     "css-loader": "^0.28.4",
     "deep-equal": "^1.0.1",

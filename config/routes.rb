@@ -4,4 +4,6 @@ Rails.application.routes.draw do
   get 'projects/gradients_mixins_scss'
   get 'projects/render_sass'
   get 'projects/jsxy'
+
+  root to: 'main#home'
 end
