@@ -28,7 +28,7 @@ import {contains} from 'underscore.string'
 import isEmpty from 'lodash/isEmpty'
 import mapValues from 'lodash/mapValues'
 import {Segment, Tab, Message, Icon} from 'semantic-ui-react'
-import anime from 'animejs'
+import anime from 'animejs-hooks'
 import 'animate-backgrounds/animate-backgrounds.anime'
 import find from 'lodash/find'
 import fromPairs from 'lodash/fromPairs'
@@ -126,6 +126,7 @@ class App_ extends React.Component
       timeline.add {
         targets, duration, easing, elasticity
         offset: offset_str
+        seekIgnoreOffset: yes
         # begin: do (step_index) -> ->
         #   _update_step {step_index, running: yes}
         # complete: do (step_index) -> ->
@@ -149,6 +150,7 @@ class App_ extends React.Component
             "\n  elasticity: #{elasticity},"
           else ''
         }
+        seekIgnoreOffset: true,
         #{
           for prop_name, prop_val of props
             """

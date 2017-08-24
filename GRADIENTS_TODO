@@ -58,3 +58,9 @@
   - and first transparent stop doesn't change, is this related?
 - why doesn't animating scale of finger wave or drops work?
 - allow to export sass for any given step?
+- before (the previous step ends) is resetting to after when editing ms
+- allow to stop editing start offset (and use abs offset value in text)
+- load saved:
+  - show most recent first?
+  - can right-align dropdown so not cut off?
+  - allow to delete saved?
