@@ -35,9 +35,14 @@ Docs = ->
       of AnimeJS.
 
     %p
-      See
-      %a{ href: 'https://github.com/helixbass/animate-backgrounds' }^ here
+      See the
+      %a{ href: 'https://github.com/helixbass/animate-backgrounds' }^ README
       for installation/usage and supported syntax
+
+    %p
+      Try the
+      %a{ href: 'http://helixbass.net/projects/gradients' }^ interactive tool
+      to easily animate some cool gradient patterns
 
     %p
       Here, we look at examples of the different aspects
@@ -49,25 +54,71 @@ Docs = ->
       Click the gradient background to run
 
     %Example{
-      title: 'Single color'
+      title: 'Stop color'
       css:
         backgroundImage: 'radial-gradient(circle at bottom left, aquamarine 25%, deepskyblue 25%)'
       js:
-        anime:
-          standard:
-            backgroundImage:
-              'radial-gradient(circle at bottom left, aquamarine 25%, magenta 25%)'
-          shorthand:
-            backgroundImage:
-              'deepskyblue -> magenta'
-        jquery:
-          standard:
-            backgroundImage:
-              'radial-gradient(circle at bottom left, aquamarine 25%, magenta 25%)'
-          shorthand:
-            backgroundImage:
-              'deepskyblue -> magenta'
+        standard:
+          backgroundImage:
+            'radial-gradient(circle at bottom left, aquamarine 25%, magenta 25%)'
+        shorthand:
+          backgroundImage:
+            'deepskyblue -> magenta'
     }
+
+    %Example{
+      title: 'Stop position'
+      css:
+        backgroundImage: 'radial-gradient(circle at bottom left, aquamarine 25%, deepskyblue 25%)'
+      js:
+        standard:
+          backgroundImage:
+            'radial-gradient(circle at bottom left, aquamarine 50%, deepskyblue 50%)'
+        shorthand:
+          backgroundImage:
+            '25% -> 50%'
+    }
+
+    %Example{
+      title: 'Stop color and position'
+      css:
+        backgroundImage: 'radial-gradient(circle at bottom left, aquamarine 25%, deepskyblue 25%)'
+      js:
+        standard:
+          backgroundImage:
+            'radial-gradient(circle at bottom left, aquamarine 50%, magenta 50%)'
+        shorthand:
+          backgroundImage:
+            '25% -> 50%, deepskyblue -> magenta'
+    }
+
+    %Example{
+      title: 'Starting point (radial)'
+      css:
+        backgroundImage: 'radial-gradient(circle at 0% 100%, aquamarine 25%, deepskyblue 45%)'
+      js:
+        standard:
+          backgroundImage:
+            'radial-gradient(circle at 0% 0%, aquamarine 25%, deepskyblue 45%)'
+        shorthand:
+          backgroundImage:
+            '100% -> 0%'
+    }
+
+    %Example{
+      title: 'Angle (linear)'
+      css:
+        backgroundImage: 'repeating-linear-gradient(45deg, gainsboro 0px, gainsboro 25px, orchid 25px, orchid 50px)'
+      js:
+        standard:
+          backgroundImage:
+            'repeating-linear-gradient(90deg, gainsboro 0px, gainsboro 25px, orchid 25px, orchid 50px)'
+        shorthand:
+          backgroundImage:
+            '45deg -> 90deg'
+    }
+
+  # TODO: simultaneous, indexed shorthand syntax, background-position, background-size
 
 path = (obj, path) ->
   steps = path.split '.'
@@ -78,10 +129,17 @@ path = (obj, path) ->
 class Example extends React.Component
   constructor: (props) ->
     super props
+    {js} = props
     @state =
       id: "a#{do uuid}"
       version: 'anime.shorthand'
       duration: 1500
+      js: @normalize_js js
+
+  normalize_js: (js) ->
+    return js if 'anime' of js
+    anime: js
+    jquery: js
 
   handle_engine_change: (event, {value}) =>
     {version} = @state
@@ -96,8 +154,8 @@ class Example extends React.Component
     @setState
       version: "#{engine}.#{value}"
   render: ->
-    {title, css, js} = @props
-    {id, version, duration} = @state
+    {title, css} = @props
+    {id, version, duration, js} = @state
     id_selector = "##{id}"
 
     version_param =
@@ -110,12 +168,14 @@ class Example extends React.Component
         el.style[prop_name] = prop_val
 
       if engine is 'anime'
-        anime {
+        anim = anime {
           targets: id_selector
           duration
           easing: 'linear'
           param...
         }
+        console.log {anim}
+        anim
       else
         $ id_selector
         .animate param, {
