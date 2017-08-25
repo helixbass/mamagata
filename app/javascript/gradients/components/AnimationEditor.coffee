@@ -71,11 +71,12 @@ ExportJs = ({animation_js}) ->
       warning: yes
       size: 'tiny'
     }
-      You need to use the
-      %a{ href: 'https://github.com/helixbass/animejs-hooks' }^ hook-enabled version
-      of AnimeJS (<a href='http://npm.im/animejs-hooks'><code>animejs-hooks</code></a> on npm).
-      See installation/usage instructions
-      %a{ href: 'https://github.com/helixbass/animate-backgrounds#for-animejs' }^ here
+      See
+      %a{ href: 'https://github.com/helixbass/animate-backgrounds#for-animejs' }^ installation/usage instructions
+      for how to load the
+      hook-enabled version
+      of AnimeJS (<a href='http://npm.im/animejs-hooks'><code>animejs-hooks</code></a>)
+      and the <a href='http://npm.im/animate-backgrounds'><code>animate-backgrounds</code></a> hooks
 ExportJs = connect(
   (state) ->
     animation_js: get_animation_js state

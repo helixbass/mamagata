@@ -3,7 +3,7 @@ import {css as has} from 'glamor'
 import get_mixin_args from '../selectors/get_mixin_args'
 import find from 'lodash/find'
 import ArgField from './ArgField'
-import {Form, Tab} from 'semantic-ui-react'
+import {Form, Tab, Message} from 'semantic-ui-react'
 import {update_mixin_arg} from '../actions'
 {Pane} = Tab
 
@@ -62,10 +62,21 @@ MixinCSS = ({mixin: {css}}) ->
   %pre.(has
     whiteSpace: 'pre-wrap'
   )
-    = css.replace /\.app /, '.selector '
+    = css.replace /\.app /, '.SELECTOR '
 
 MixinSass = ({mixin: {sass}}) ->
-  %pre.(has
-    whiteSpace: 'pre-wrap'
-  )
-    = sass.replace /\.app /, '.selector '
+  %div
+    %pre.(has
+      whiteSpace: 'pre-wrap'
+    )
+      = sass.replace /\.app /, '.SELECTOR '
+    %Message.(has
+      maxWidth: 350
+    ){
+      warning: yes
+      size: 'tiny'
+    }
+      See
+      %a{ href: 'https://github.com/helixbass/sass-gradient-patterns#how-to-use-it' }^ installation/usage instructions
+      for how to include the <a href='http://npm.im/sass-gradient-patterns'><code>sass-gradient-patterns</code></a> mixins
+      in your project
