@@ -105,9 +105,9 @@ class App_ extends React.Component
         if _loop
           """
           \n  direction: 'alternate',
+            loop: #{_loop.count * 2},
           """
         else '' }
-        loop: #{_loop?.count * 2},
       })
     """
     prev_step = null
@@ -136,7 +136,7 @@ class App_ extends React.Component
       }
       js += """
       \n.add({
-        targets: '.selector',#{
+        targets: '.SELECTOR',#{
           if offset
             """
             \n  offset: '#{offset_str}',
@@ -144,19 +144,15 @@ class App_ extends React.Component
           else ''
         }
         duration: #{duration},
-        easing: '#{easing}',
-        #{
+        easing: '#{easing}',#{
           if contains easing, 'Elastic'
             "\n  elasticity: #{elasticity},"
-          else ''
-        }
-        seekIgnoreOffset: true,
-        #{
-          for prop_name, prop_val of props
+          else '' }
+        seekIgnoreOffset: true,#{
+          (for prop_name, prop_val of props
             """
             \n  #{prop_name}: '#{prop_val}',
-            """
-        }
+            """).join '' }
       })
       """
       prev_step = step

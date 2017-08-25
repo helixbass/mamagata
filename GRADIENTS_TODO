@@ -1,7 +1,6 @@
 - color picker: click to revert back to current color? HSLV? color names? is HSV calculation funky?
 - reset mixin
-- export animation JS
-- shorthand editor for animations? or just JS export?
+- shorthand editor for animations?
 - choose animation engine?
 - UI transitions?
 - document animation
@@ -65,3 +64,4 @@
   - can right-align dropdown so not cut off?
   - allow to delete saved?
 - make mamagata public
+- "pop" seekIgnoreOffset (in anime) so that it doesn't try and treat it like an animated property

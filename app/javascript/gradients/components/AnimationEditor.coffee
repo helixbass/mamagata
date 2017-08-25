@@ -7,11 +7,12 @@ import get_animation_state from '../selectors/get_animation_state'
 import get_animation_steps from '../selectors/get_animation_steps'
 import get_current_mixin from '../selectors/get_current_mixin'
 import get_loop from '../selectors/get_loop'
+import get_animation_js from '../selectors/get_animation_js'
 import dashed_to_label from '../helpers/dashed_to_label'
 import _int from '../helpers/_int'
 import extended from '../helpers/extended'
 import ArgField from './ArgField'
-import {Segment, Button, Accordion, Tab, Form, Checkbox, Dropdown, Input, Icon} from 'semantic-ui-react'
+import {Segment, Button, Accordion, Tab, Form, Checkbox, Dropdown, Input, Icon, Message} from 'semantic-ui-react'
 {TextArea, Field} = Form
 {Group} = Button
 import Collapse from 'react-css-collapse'
@@ -22,8 +23,29 @@ import defer from 'lodash/defer'
 
 AnimationEditor = ({animation_state, play, pause, reset, add_step, animation, handle_seek}) ->
   .animation-editor
-    %Controls{ animation_state, play, pause, reset, animation, handle_seek }
-    %Steps{ add_step }
+    %Tab{
+      panes: [
+        {
+          menuItem:
+            icon: 'edit'
+            content: 'Edit'
+            key: 'edit'
+          render: ->
+            %Tab.Pane
+              %Controls{ animation_state, play, pause, reset, animation, handle_seek }
+              %Steps{ add_step }
+        }
+        {
+          menuItem:
+            icon: 'share'
+            content: 'Export JS'
+            key: 'export'
+          render: ->
+            %Tab.Pane
+              %ExportJs
+        }
+      ]
+    }
 export default AnimationEditor = connect(
   (state) ->
     animation_state: get_animation_state state
@@ -37,6 +59,27 @@ export default AnimationEditor = connect(
     add_step: ->
       dispatch do add_animation_step
 ) AnimationEditor
+
+ExportJs = ({animation_js}) ->
+  %div
+    %pre.(has
+      whiteSpace: 'pre-wrap'
+    )= animation_js
+    %Message.(has
+      maxWidth: 350
+    ){
+      warning: yes
+      size: 'tiny'
+    }
+      You need to use the
+      %a{ href: 'https://github.com/helixbass/animejs-hooks' }^ hook-enabled version
+      of AnimeJS (<a href='http://npm.im/animejs-hooks'><code>animejs-hooks</code></a> on npm).
+      See installation/usage instructions
+      %a{ href: 'https://github.com/helixbass/animate-backgrounds#for-animejs' }^ here
+ExportJs = connect(
+  (state) ->
+    animation_js: get_animation_js state
+) ExportJs
 
 Controls = ({animation_state, play, pause, reset, animation, handle_seek}) ->
   %Segment{ vertical: yes }
@@ -149,7 +192,7 @@ Steps = ({add_step}) ->
 running_class = has
   backgroundColor: 'rgba(0, 255, 0, 0.3)'
 AnimationSteps = ({steps, toggle_step}) ->
-  %Accordion{
+  %Accordion.animation-steps{
     exclusive: no
     panels:
       for step, step_index in steps
@@ -257,7 +300,7 @@ class AnimationStep extends React.Component
       }
       = %Sorting{ step_index, steps, @handle_reorder } if sorting
       %StepForm{ set_duration, duration, set_easing, easing, easing_options, set_elasticity, elasticity, offset, offset_from, set_offset, set_offset_direction, step_index }
-      %StepTabs{ step, step_index }
+      %Changes{ step, step_index }
 AnimationStep = connect(
   null
   (dispatch, {step_index, step}) ->
