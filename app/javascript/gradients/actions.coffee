@@ -179,9 +179,19 @@ export delete_step_arg = ({step_index, name}) -> {
 
 export update_step_arg = ({step_index, name, value}) ->
   (dispatch, getState) ->
-    value ?= # TODO: for multiple steps this should be the value from the preceding step
+    value ?= do ->
+      state = do getState
+
+      for {changed_args}, _step_index in get_animation_steps(state) by -1
+        continue unless _step_index < step_index
+        return changed.value if (changed =
+          find(
+            changed_args
+            {name}
+          ))
+
       find(
-        get_mixin_args do getState
+        get_mixin_args state
         {name}
       )
       .value

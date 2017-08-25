@@ -1,6 +1,7 @@
 import dashed_to_label from '../helpers/dashed_to_label'
 import DebouncedInput from './DebouncedInput'
 import ColorInput from './ColorInput'
+import {css as has} from 'glamor'
 import {Message, Form, Icon} from 'semantic-ui-react'
 {Field} = Form
 
@@ -30,7 +31,9 @@ export default ({arg: {name, value}, param, onChange, onDelete, auto_open}) ->
 
 ArgDescription = ({param: {description}}) ->
   return null unless description
-  %Message{
+  %Message.(has
+    maxWidth: 300
+  ){
     attached: 'bottom'
     info: yes
     size: 'tiny'

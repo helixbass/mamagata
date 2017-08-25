@@ -1,5 +1,3 @@
-- delay/offset/non-sequential
-  - set simultaneous flag when necessary
 - color picker: click to revert back to current color? HSLV? color names? is HSV calculation funky?
 - reset mixin
 - export animation JS
@@ -19,10 +17,8 @@
 - error messages when server fails to render sass
 - make SCSS/CSS editable?
 - make anime depend on tinycolor2?
-  - publish anime-csshooks?
 - different styles of color transitions (eg darker)? what does it do currently? animate r, g, b, a separately? would animating h, s, v/l look different?
-- mobile view
-  - color picker
+  - add this to (fork of) tinycolor2? as pluggable?
 - step styling - Preview/duration spacing
 - hearts sizing
   - color darkmagenta background-color aquamarine
@@ -39,15 +35,15 @@
 - highlight steps as they're running?
 - make sure elasticity has no effect except when elastic easing selected
 - elasticity control - slider? min/max number? label max 1000?
-- how to handle connected/relative defaults?
+- connected/relative defaults
+  - show $set-relative control at top (using parsed dependencies?)?
+  - somehow indicate (eg dimming out) when a param is being controlled so the value you're seeing isn't right?
 - shake (ie easing ends where it starts)?
 - allow to use up/down arrow keys to adjust input values?
 - batch step calls?
 - support relative units when animating gradients?
 - preview button weirdness - says preview checked but can drag around timeline and doesn't uncheck
   - and play button stays as pause button
-- initial value when adding animated param should come from prev step, not initial value
-- animation steps don't update corresponding params when mixin arg changed
 - should reset to customize tab when new pattern selected?
 - animations should fail gracefully on browsers that don't support gradients
   - check them cross-browser
@@ -57,10 +53,15 @@
 - angle changes when animating eg chard stripe width (to top left, to top right become 315deg, 45deg)
   - and first transparent stop doesn't change, is this related?
 - why doesn't animating scale of finger wave or drops work?
+  - it's b/c it seems to be converting background-size from em -> px (so when getting computed value, it's returning px)
 - allow to export sass for any given step?
 - before (the previous step ends) is resetting to after when editing ms
-- allow to stop editing start offset (and use abs offset value in text)
+- step start:
+  - allow to stop editing start offset (and use abs offset value in text)
+  - allow ends/starts?
+  - allow to choose other step besides previous?
 - load saved:
   - show most recent first?
   - can right-align dropdown so not cut off?
   - allow to delete saved?
+- make mamagata public

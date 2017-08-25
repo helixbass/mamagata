@@ -63,7 +63,7 @@
     "webpack-merge": "^4.1.0"
   },
   "devDependencies": {
-    "sass-gradient-patterns": "^0.1.5",
+    "sass-gradient-patterns": "^0.1.6",
     "webpack-dev-server": "^2.5.1"
   }
 }
