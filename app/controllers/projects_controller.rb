@@ -5,6 +5,9 @@ class ProjectsController < ApplicationController
   def jsxy
   end
 
+  def animate_backgrounds
+  end
+
   def gradients_mixins_scss
     contents = File.read(Rails.root.join('node_modules', 'sass-gradient-patterns', '_gradient_patterns.scss'))
     render json: {contents: contents}

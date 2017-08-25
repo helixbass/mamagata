@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   get 'projects/gradients_mixins_scss'
   get 'projects/render_sass'
   get 'projects/jsxy'
+  get 'projects/animate_backgrounds'
 
   root to: 'main#home'
 end

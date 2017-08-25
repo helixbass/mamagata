@@ -91,7 +91,7 @@ Home = ->
               Bennett Feely's
               %code^ background-blend-mode
               gallery
-      %Card{ href: 'https://github.com/helixbass/animate-backgrounds' }
+      %Card{ href: '/projects/animate_backgrounds' }
         %Image{ src: '' }
         %Card.Content
           %Card.Header animate-backgrounds
