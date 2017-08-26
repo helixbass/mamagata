@@ -118,7 +118,40 @@ Docs = ->
             '45deg -> 90deg'
     }
 
-  # TODO: simultaneous, indexed shorthand syntax, background-position, background-size
+    %Example{
+      title: 'Background position'
+      css:
+        backgroundImage: '
+          repeating-linear-gradient(45deg, transparent 0, transparent 25%, rgba(0, 150, 150, 0.5) 25%, rgba(0, 150, 150, 0.5) 50%),
+          repeating-linear-gradient(135deg, transparent 0, transparent 25%, rgba(0, 150, 150, 0.5) 25%, rgba(0, 150, 150, 0.5) 50%)'
+        backgroundSize: '70px 70px, 70px 70px'
+        backgroundPosition: '0 0, 0 0'
+      js:
+        standard:
+          backgroundPosition:
+            '25px 0, 0 0'
+        shorthand:
+          backgroundPosition:
+            '[0] 25px 0'
+    }
+
+    %Example{
+      title: 'Background size'
+      css:
+        backgroundImage: '
+          repeating-linear-gradient(45deg, transparent 0, transparent 25%, rgba(0, 150, 150, 0.5) 25%, rgba(0, 150, 150, 0.5) 50%),
+          repeating-linear-gradient(135deg, transparent 0, transparent 25%, rgba(0, 150, 150, 0.5) 25%, rgba(0, 150, 150, 0.5) 50%)'
+        backgroundSize: '70px 70px, 70px 70px'
+      js:
+        standard:
+          backgroundSize:
+            '90px 90px, 90px 90px'
+        shorthand:
+          backgroundSize:
+            '70px -> 90px'
+    }
+
+  # TODO: simultaneous, indexed shorthand syntax
 
 path = (obj, path) ->
   steps = path.split '.'
@@ -230,7 +263,7 @@ class Example extends React.Component
               marginTop: '.4rem'
             )
               = for prop_name, prop_val of css
-                "#{camel_to_dashed prop_name}: #{prop_val};"
+                "#{camel_to_dashed prop_name}: #{prop_val};\n"
           %td.(has
             maxWidth: '30em'
           )

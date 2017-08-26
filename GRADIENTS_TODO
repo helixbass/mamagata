@@ -4,7 +4,6 @@
 - choose animation engine?
 - UI transitions?
 - document animation
-- shorthand for background-position/-size?
 - interface for animating position?
 - UI controls based on type
   - hue?
@@ -48,6 +47,7 @@
   - check them cross-browser
 - demos
 - What's this page about? Modal explaining usage and links to libs
+  - animation guide
 - adjust some previews to show better: wave, svg logo
 - angle changes when animating eg chard stripe width (to top left, to top right become 315deg, 45deg)
   - and first transparent stop doesn't change, is this related?
