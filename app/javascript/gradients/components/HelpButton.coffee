@@ -223,4 +223,9 @@ export default ->
           If you're curious about how this page works, you can check out the source code in the
           %a{ href: 'https://github.com/helixbass/mamagata' }^ helixbass/mamagata
           repo (most of the (React/Redux) code for this page is under <code>app/javascript/gradients/</code>)
+        %Header{ as: 'h4', content: 'Issues/Questions?' }
+        %p
+          If you have any questions about how to use this tool (or how it works),
+          or run into any buggy/broken behavior,
+          please open a <a href='https://github.com/helixbass/mamagata/issues'>Github issue</a>.
         %br

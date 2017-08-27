@@ -2,7 +2,7 @@
   "name": "mamagata",
   "private": true,
   "dependencies": {
-    "animate-backgrounds": "^0.1.5",
+    "animate-backgrounds": "^0.1.6",
     "animejs-hooks": "^0.1.1",
     "autoprefixer": "^7.1.2",
     "axios": "^0.16.2",
