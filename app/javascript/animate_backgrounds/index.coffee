@@ -109,6 +109,19 @@ Docs = ->
     }
 
     %Example{
+      title: 'Extent (radial)'
+      css:
+        backgroundImage: 'radial-gradient(circle 200px at 0% 100%, aquamarine 25%, deepskyblue 45%)'
+      js:
+        standard:
+          backgroundImage:
+            'radial-gradient(circle 400px at 0% 100%, aquamarine 25%, deepskyblue 45%)'
+        shorthand:
+          backgroundImage:
+            '200px -> 400px'
+    }
+
+    %Example{
       title: 'Angle (linear)'
       css:
         backgroundImage: 'repeating-linear-gradient(45deg, gainsboro 0px, gainsboro 25px, orchid 25px, orchid 50px)'
