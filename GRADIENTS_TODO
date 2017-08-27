@@ -1,7 +1,7 @@
 - color picker: click to revert back to current color? HSLV? color names? is HSV calculation funky?
-- reset mixin
+- reset mixin/undo?
 - shorthand editor for animations?
-- choose animation engine?
+- choose animation engine/Export jQuery?
 - UI transitions?
 - interface for animating position?
 - UI controls based on type
@@ -24,11 +24,12 @@
 - marrakesh: add params for ring start/thickness
 - argyle: allow to change angle?
 - viking: add start/end outlines? different inner/outer ring colors (10% lighter?)
-- jacks:
+- svg logo:
   - pull in stroke-color cutoff circle (based on dot/stroke width?) so that at eg smaller dot size less likely to be revealed
   - allow stagger?
   - bottom half?
   - make leftmost/rightmost strokes a little more than a quarter, their edge is exposed at size > ~35%
+- bricks: look janky on firefox (gap between top and bottom halves at default size)
 - highlight steps as they're running?
 - make sure elasticity has no effect except when elastic easing selected
 - elasticity control - slider? min/max number? label max 1000?
@@ -45,8 +46,6 @@
 - animations should fail gracefully on browsers that don't support gradients
   - check them cross-browser
 - demos
-- What's this page about? Modal explaining usage and links to libs
-  - animation guide
 - adjust some previews to show better: wave, svg logo
 - angle changes when animating eg chard stripe width (to top left, to top right become 315deg, 45deg)
   - and first transparent stop doesn't change, is this related?
@@ -62,5 +61,4 @@
   - show most recent first?
   - can right-align dropdown so not cut off?
   - allow to delete saved?
-- make mamagata public
 - "pop" seekIgnoreOffset (in anime) so that it doesn't try and treat it like an animated property
