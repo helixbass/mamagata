@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom'
 import {Container, Dropdown, Header} from 'semantic-ui-react'
-import 'semantic-ui-css/semantic.min.css'
+# import 'semantic-ui-css/semantic.min.css' TODO: revert once https://github.com/webpack-contrib/extract-text-webpack-plugin/issues/573 is fixed
+import 'semantic-ui-css/semantic.css'
 import './animate_backgrounds.sass'
 import {css as has} from 'glamor'
 import anime from 'animejs-hooks'
@@ -43,7 +44,7 @@ Docs = ->
 
     %p
       Try the
-      %a{ href: 'http://helixbass.net/projects/gradients' }^ interactive tool
+      %a{ href: '/projects/gradients' }^ interactive tool
       to easily animate some cool gradient patterns
 
     %p

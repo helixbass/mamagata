@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom'
 import {Header, Segment, Card, Icon, Image, Item, Container, List, Divider} from 'semantic-ui-react'
-import 'semantic-ui-css/semantic.min.css'
+# import 'semantic-ui-css/semantic.min.css' TODO: revert once https://github.com/webpack-contrib/extract-text-webpack-plugin/issues/573 is fixed
+import 'semantic-ui-css/semantic.css'
 import './home.sass'
 import {css as has} from 'glamor'
 

@@ -33,9 +33,9 @@ import 'animate-backgrounds/animate-backgrounds.anime'
 import find from 'lodash/find'
 import fromPairs from 'lodash/fromPairs'
 import '../sass/reset.scss'
+import 'semantic-ui-css/semantic.min.css'
 import '../sass/app.sass'
 import '../sass/loader.css'
-import 'semantic-ui-css/semantic.min.css'
 import Perf from 'react-addons-perf'
 window.Perf = Perf
 

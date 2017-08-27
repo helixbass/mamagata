@@ -219,4 +219,7 @@ export default ->
           jQuery or a
           %a{ href: 'npm.im/animejs-hooks' }^ hook-enabled version
           of AnimeJS (this page currently only uses/exposes the AnimeJS version).
-          
+        %p
+          If you're curious about how this page works, you can check out the source code in the
+          %a{ href: 'https://github.com/helixbass/mamagata' }^ helixbass/mamagata
+          repo (most of the (React/Redux) code for this page is under <code>app/javascript/gradients/</code>)
