@@ -1,11 +1,14 @@
 class ProjectsController < ApplicationController
   def gradients
+    @title = 'Gradient patterns tool'
   end
 
   def jsxy
+    @title = 'CoffeeScript-JSXY'
   end
 
   def animate_backgrounds
+    @title = 'animate-backgrounds'
   end
 
   def gradients_mixins_scss

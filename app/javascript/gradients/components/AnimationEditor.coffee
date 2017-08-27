@@ -294,7 +294,9 @@ class AnimationStep extends React.Component
           float: 'right'
           marginRight: 7
       } if steps.length > 1
-      %Checkbox{
+      %Checkbox.(has
+        fontSize: '.85rem !important'
+      ){
         label: 'Preview?'
         onChange: toggle_preview
         checked: preview
@@ -312,7 +314,6 @@ AnimationStep = connect(
           offset * if step.offset < 0 then -1 else 1
       }
     set_offset_direction: (event, {value: multiplier}) ->
-      console.log {offset: step.offset, abs: Math.abs(step.offset), multiplier, _int: _int multiplier}
       dispatch update_step {
         step_index
         offset:
@@ -373,7 +374,10 @@ class StepForm extends React.Component
   render: ->
     {set_duration, duration, set_easing, easing, easing_options, set_elasticity, elasticity, step_index, offset, offset_from, set_offset, set_offset_direction} = @props
 
-    %Form{ size: 'tiny' }
+    %Form.step-form.(has
+      marginTop: '.5rem'
+      marginBottom: '.8rem'
+    ){ size: 'tiny' }
       %Duration{ duration, set_duration }
       = %StartOffset{ offset, offset_from, set_offset, set_offset_direction } if step_index > 0
       %Easing{ easing, set_easing, easing_options }

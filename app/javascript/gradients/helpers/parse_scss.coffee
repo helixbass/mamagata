@@ -1,4 +1,5 @@
 import gonzales from 'gonzales-pe'
+import 'whatwg-fetch'
 
 export default ->
   fetch '/projects/gradients_mixins_scss'
