@@ -1,24 +1,12 @@
-# README
+# helixbass.net
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This repository contains the source code for [helixbass.net](http://helixbass.net).
 
-Things you may want to cover:
+It's a Rails 5.1 project. The source code for the [gradient patterns tool](http://helixbass.net/projects/gradients)
+(React/Redux app) can be found under `app/javascript/gradients/`
 
-* Ruby version
+## Issues/help
+Feel free to [open an issue](https://github.com/helixbass/mamagata/issues) with any questions, feature requests, bugs, etc
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## License
+MIT
