@@ -235,6 +235,17 @@ animation_steps = switchingReducer
     ]
 , default: []
 
+preset_colors = switchingReducer
+  add_preset_color: (state, {color}) ->
+    [
+      color
+      state...
+    ][...16]
+, default: [
+  '#d0021b', '#f5a623', '#f8e71c', '#8b572a', '#7ed321', '#417505', '#bd10e0', '#9013fe'
+  '#4a90e2', '#50e3c2', '#b8e986', '#000000', '#4a4a4a', '#9b9b9b', '#ffffff'
+]
+
 working_on_saved = switchingReducer
   set_current_mixin: ->
     null
@@ -250,4 +261,5 @@ export default combineReducers {
   animation_js
   reset_animation, loop: _loop
   working_on_saved
+  preset_colors
 }

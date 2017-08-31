@@ -1,3 +1,4 @@
+import {connect} from 'react-redux'
 import {css as has} from 'glamor'
 import {SketchPicker} from 'react-color'
 import css_color_names from '../helpers/css_color_names'
@@ -7,38 +8,51 @@ import {Menu, Label, Dropdown, Icon} from 'semantic-ui-react'
 # import 'jquery-color/jquery.color.svg-names'
 {Color, extend} = $
 extend Color.names, css_color_names
+import {add_preset_color as _add_preset_color} from '../actions'
+import get_preset_colors from '../selectors/get_preset_colors'
 
 rgba_obj_from_color_str = (str) ->
   [r, g, b, a] = Color(str).rgba()
   {r, g, b, a}
 
-export default class ColorInput extends React.Component
+class ColorInput extends React.Component
   constructor: (props) ->
     {value, auto_open} = props
     super props
     @state =
       color: rgba_obj_from_color_str value
       editing: !! auto_open
+  color_str: (color) ->
+    color = rgb: color unless color.rgb?
+    {rgb: {r, g, b, a}} = color
+
+    if a < 1
+      "rgba(#{r}, #{g}, #{b}, #{a})"
+    else
+      color.hex ? Color(
+        red: r
+        green: g
+        blue: b
+      ).toHexString()
   handle_change_complete: (color) =>
     {onChange} = @props
-    {rgb: {r, g, b, a}, hex} = color
 
-    onChange(
-      if a < 1
-        "rgba(#{r}, #{g}, #{b}, #{a})"
-      else
-        hex
-    )
+    onChange @color_str color
 
     @setState {color}
   toggle_editing: =>
-    {editing} = @state
+    {preset_colors, add_preset_color} = @props
+    {editing, color} = @state
+
+    if editing and color
+      color_str = @color_str color
+      add_preset_color color_str unless color_str in preset_colors
 
     @setState editing: not editing
   componentWillReceiveProps: ({value}) ->
     @setState color: rgba_obj_from_color_str value
   render: ->
-    {onChange, value} = @props
+    {onChange, value, preset_colors} = @props
     {color, editing} = @state
 
     if editing
@@ -58,9 +72,17 @@ export default class ColorInput extends React.Component
           color
           onChangeComplete: @handle_change_complete
           colorNames: css_color_names
+          presetColors: preset_colors
         }
     else
       %ColorButton{ color, value, onClick: @toggle_editing }
+export default connect(
+  (state) ->
+    preset_colors: get_preset_colors state
+  (dispatch) ->
+    add_preset_color: (color) ->
+      dispatch _add_preset_color color
+) ColorInput
 
 ColorButton = ({color, value, onClick}) ->
   {r, g, b, a} = color.rgb ? color

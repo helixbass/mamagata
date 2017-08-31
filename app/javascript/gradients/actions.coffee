@@ -240,3 +240,8 @@ export save = ({name}) ->
       type: 'SAVE'
       data...
     }
+
+export add_preset_color = (color) -> {
+  type: 'ADD_PRESET_COLOR'
+  color
+}
