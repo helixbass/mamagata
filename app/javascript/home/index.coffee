@@ -96,7 +96,7 @@ Resume = ->
       %Item.Group
         %Item
           %Item.Content
-            %Item.Header Funemployment (hacking/learning/traveling in Mexico)
+            %Item.Header Freelance projects (hacking/learning/traveling)
             %Item.Meta 2017 thus far
             %Item.Description
               %ul
