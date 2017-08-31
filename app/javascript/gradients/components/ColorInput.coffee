@@ -19,9 +19,16 @@ class ColorInput extends React.Component
   constructor: (props) ->
     {value, auto_open} = props
     super props
-    @state =
-      color: rgba_obj_from_color_str value
+    color = rgba_obj_from_color_str value
+    @state = {
+      color
+      start_color: color
       editing: !! auto_open
+    }
+  color_eq: (a, b) ->
+    return no unless a?.r? and b?.r?
+    return no for prop in ['r', 'g', 'b', 'a'] when a[prop] isnt b[prop]
+    yes
   color_str: (color) ->
     color = rgb: color unless color.rgb?
     {rgb: {r, g, b, a}} = color
@@ -42,18 +49,20 @@ class ColorInput extends React.Component
     @setState {color}
   toggle_editing: =>
     {preset_colors, add_preset_color} = @props
-    {editing, color} = @state
+    {editing, color, start_color} = @state
 
-    if editing and color
+    if editing and color and not @color_eq color, start_color
       color_str = @color_str color
       add_preset_color color_str unless color_str in preset_colors
+    else unless editing
+      @setState start_color: color
 
     @setState editing: not editing
   componentWillReceiveProps: ({value}) ->
     @setState color: rgba_obj_from_color_str value
   render: ->
     {onChange, value, preset_colors} = @props
-    {color, editing} = @state
+    {color, editing, start_color} = @state
 
     if editing
       .(has position: 'relative')
@@ -69,7 +78,7 @@ class ColorInput extends React.Component
             zIndex: 500
         }
         %SketchPicker{
-          color
+          color, start_color
           onChangeComplete: @handle_change_complete
           colorNames: css_color_names
           presetColors: preset_colors

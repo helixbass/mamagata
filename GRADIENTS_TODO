@@ -1,4 +1,5 @@
-- color picker: click to revert back to current color? HSLV? color names? is HSV calculation funky?
+- color picker
+  - feels slow (eg when changing)
   - remember recent colors in localStorage?
 - reset mixin/undo?
 - shorthand editor for animations?
