@@ -86,12 +86,18 @@ render_current_mixin = ({mixin, dispatch, getState}) ->
     mixin_args: get_mixin_args state
   }
   .then ({sass, css}) ->
+    set_preview_css css
+
+    background_position =
+      window.getComputedStyle(
+        document.querySelector '.app'
+        null
+      ).backgroundPosition
+
     dispatch {
       type: 'UPDATE_CURRENT_MIXIN'
-      css, sass
+      css, sass, background_position
     }
-
-    set_preview_css css
 
 set_preview_css = (css) ->
   old_sheet = document.querySelector '#app_sheet'
@@ -190,11 +196,15 @@ export update_step_arg = ({step_index, name, value}) ->
             {name}
           ))
 
-      find(
-        get_mixin_args state
-        {name}
-      )
-      .value
+      if name is 'background_position'
+        get_current_mixin state
+        .background_position
+      else
+        find(
+          get_mixin_args state
+          {name}
+        )
+        .value
 
     dispatch {
       type: 'UPDATE_STEP_ARG'

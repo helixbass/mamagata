@@ -516,10 +516,14 @@ class Changes extends React.Component
           upward: yes
           icon: 'plus'
           text: 'Add animated param'
-          options:
-            for {name, value, type} in start_args when type isnt 'boolean'
+          options: [
+            (for {name, value, type} in start_args when type isnt 'boolean'
               text: dashed_to_label name
               value: name
+            )...
+            text: 'Background position'
+            value: 'background_position'
+          ]
           onChange: @handle_select_param
           value: ''
         }

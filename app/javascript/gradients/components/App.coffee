@@ -88,9 +88,15 @@ class App_ extends React.Component
       extend step, {sass, css}
       step_css_props =
         parse_css_props {css}
-      fromPairs(
-        [name, val] for name, val of step_css_props when start_css_props[name] isnt val
-      )
+      fromPairs([
+        ([name, val] for name, val of step_css_props when start_css_props[name] isnt val)...
+        (if background_position_arg=find changed_args, name: 'background_position'
+          [[
+            'backgroundPosition'
+            background_position_arg.value
+          ]]
+        else [])...
+      ])
   create_animation: ({steps, completed, _update_step, _set_animation_js, loop: _loop, current_mixin}) ->
     targets = '.app'
     timeline = anime.timeline

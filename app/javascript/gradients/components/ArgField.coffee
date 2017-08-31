@@ -6,35 +6,51 @@ import {Message, Form, Icon, Checkbox} from 'semantic-ui-react'
 {Field} = Form
 
 export default ({arg: {name, value}, param, onChange, onDelete, auto_open}) ->
-  %Field
-    = %Icon{
-      name: 'window close outline'
-      link: yes
-      fitted: yes
-      onClick: onDelete
-      style: float: 'right'
-    } if onDelete
-    %label= dashed_to_label name
-    = switch param.type
-      when 'color'
-        %ColorInput{
-          onChange
-          value
-          auto_open
-        }
-      when 'boolean'
-        %Checkbox{
-          onChange: (event, {checked}) ->
-            onChange checked
-          checked: !! value
-          toggle: yes
-        }
-      else
-        %DebouncedInput{
-          onChange
+  if name is 'background_position'
+    %Field
+      = %Icon{
+        name: 'window close outline'
+        link: yes
+        fitted: yes
+        onClick: onDelete
+        style: float: 'right'
+      } if onDelete
+      %label Background position
+        %textarea{
+          onChange: ({target: {value: pos}}) ->
+            onChange pos
           value
         }
-    %ArgDescription{ param }
+  else
+    %Field
+      = %Icon{
+        name: 'window close outline'
+        link: yes
+        fitted: yes
+        onClick: onDelete
+        style: float: 'right'
+      } if onDelete
+      %label= dashed_to_label name
+      = switch param.type
+        when 'color'
+          %ColorInput{
+            onChange
+            value
+            auto_open
+          }
+        when 'boolean'
+          %Checkbox{
+            onChange: (event, {checked}) ->
+              onChange checked
+            checked: !! value
+            toggle: yes
+          }
+        else
+          %DebouncedInput{
+            onChange
+            value
+          }
+      %ArgDescription{ param }
 
 ArgDescription = ({param: {description}}) ->
   return null unless description
