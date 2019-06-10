@@ -1,4 +1,466 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Helixbassment]]></title><description><![CDATA[Articles on React, development, etc.]]></description><link>http://helixbass.net/blog</link><generator>RSS for Node</generator><lastBuildDate>Sun, 12 May 2019 17:59:14 GMT</lastBuildDate><item><title><![CDATA[Slack tip: personal activity channel]]></title><description><![CDATA[I’m a big fan of using the Slack Github integration to get Github notifications for projects I’m involved withTypically in the past, each…]]></description><link>http://helixbass.net/blog/slack-personal-activity-channel/</link><guid isPermaLink="false">http://helixbass.net/blog/slack-personal-activity-channel/</guid><pubDate>Sun, 12 May 2019 13:15:38 GMT</pubDate><content:encoded>&lt;p&gt;I’m a big fan of using the &lt;a href=&quot;https://slack.github.com/&quot;&gt;Slack Github integration&lt;/a&gt; to get Github notifications for projects I’m involved with&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Helixbassment]]></title><description><![CDATA[Articles on React, development, etc.]]></description><link>http://helixbass.net/blog</link><generator>RSS for Node</generator><lastBuildDate>Mon, 10 Jun 2019 14:59:12 GMT</lastBuildDate><item><title><![CDATA[Using dynamic portals in React to “play nice with” autoplay policy]]></title><description><![CDATA[The problemOn the current project, we have a video inside a “lightbox”-style modal. We got design feedback that it would be nice
+for the…]]></description><link>http://helixbass.net/blog/dynamic-portal/</link><guid isPermaLink="false">http://helixbass.net/blog/dynamic-portal/</guid><pubDate>Sun, 09 Jun 2019 20:02:38 GMT</pubDate><content:encoded>&lt;h3&gt;The problem&lt;/h3&gt;
+&lt;p&gt;On the current project, we have a video inside a “lightbox”-style modal. We got design feedback that it would be nice
+for the video to autoplay when the modal is opened&lt;/p&gt;
+&lt;p&gt;However, by default when setting the video to autoplay, it was playing muted in Safari/iOS Safari (requiring an additional
+tap to unmute). Since iPad is the primary deployment target for this project and the design feedback was that it should only
+autoplay if it can play unmuted, we decided to try and figure out a way to achieve that&lt;/p&gt;
+&lt;p&gt;We felt like in theory it should be doable since even though browsers have been tightening up their autoplay policies, there
+has to be a way to play a video unmuted based on explicit user action, and here there was an explicit user action taking place
+before playing the video (clicking to open the modal)&lt;/p&gt;
+&lt;p&gt;So &lt;a href=&quot;https://github.com/amay&quot;&gt;Alex&lt;/a&gt; figured that (from a React perspective) effectively if the video were already mounted
+before the modal was opened and then we did something more like an imperative &lt;code class=&quot;language-text&quot;&gt;.play()&lt;/code&gt; command when the modal was opened,
+it was likely that the video would play unmuted&lt;/p&gt;
+&lt;h3&gt;The obstacle&lt;/h3&gt;
+&lt;p&gt;If the modal itself could be mounted “up front” and simply kept visually hidden (via CSS) until it was toggled open, that
+would be straightforward, as the video component inside the modal would also be pre-mounted along with the modal itself&lt;/p&gt;
+&lt;p&gt;However, on this project we’re using &lt;a href=&quot;https://react-bootstrap.github.io/&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;react-bootstrap&lt;/code&gt;&lt;/a&gt;, which states in its &lt;a href=&quot;https://react-bootstrap.github.io/components/modal/&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;Modal&lt;/code&gt;
+docs&lt;/a&gt; that “Modals are &lt;em&gt;unmounted&lt;/em&gt; when closed”&lt;/p&gt;
+&lt;p&gt;And it didn’t seem viable to try and use a different type of modal just for this particular instance&lt;/p&gt;
+&lt;p&gt;So the only option for having the video pre-mounted before the modal opened seemed to be to somehow mount it somewhere and
+then “move” it to inside the modal once the modal had mounted&lt;/p&gt;
+&lt;h3&gt;Portals to the rescue?&lt;/h3&gt;
+&lt;p&gt;The React-y way to achieve that would be with a &lt;a href=&quot;https://reactjs.org/docs/portals.html&quot;&gt;portal&lt;/a&gt;. If you haven’t seen React
+portals before, basically they allow you to render something inside any arbitrary DOM node (rather than inside its React
+parent)&lt;/p&gt;
+&lt;p&gt;I had never seen a “dynamic portal” that changed its target parent DOM node “mid-flight”, but that seemed like
+the most obvious way to structure it - mount the video inside some visually hidden parent container initially (via a portal)
+and then when the modal opened, &lt;em&gt;\&lt;/em&gt;poof** change the portal destination to the modal!&lt;/p&gt;
+&lt;h3&gt;tl;dr it worked&lt;/h3&gt;
+&lt;p&gt;Using this dynamic portal to premount the video, it did in fact play unmuted in Safari!&lt;/p&gt;
+&lt;h3&gt;The code&lt;/h3&gt;
+&lt;p&gt;So let’s look at the specific code patterns used to create this “dynamic portal”&lt;/p&gt;
+&lt;p&gt;Portals expect to be given an actual DOM node (for the destination). So in React, when you hear “actual DOM node” you should
+be thinking “ref”&lt;/p&gt;
+&lt;p&gt;Here, we need two refs since we need two DOM nodes for the portal destination - a visually hidden container and then the modal&lt;/p&gt;
+&lt;p&gt;Initially I tried using &lt;a href=&quot;https://reactjs.org/docs/refs-and-the-dom.html#creating-refs&quot;&gt;“new-style refs”&lt;/a&gt;, since these days I’d
+default to using that style of ref. But I wasn’t seeing the portal rerendering reliably once the refs were populated&lt;/p&gt;
+&lt;p&gt;This was new to me, but apparently that’s known/expected behavior when using new-style refs via the &lt;a href=&quot;https://reactjs.org/docs/hooks-reference.html#useref&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;useRef&lt;/code&gt; hook&lt;/a&gt;
+and if you need to trigger rerendering based on a ref changing, you need to use &lt;a href=&quot;https://reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node&quot;&gt;callback-style refs&lt;/a&gt;
+instead&lt;/p&gt;
+&lt;p&gt;So here’s how I wired up the two callback-style refs:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import {flow} from &amp;#39;lodash/fp&amp;#39;
+
+const VideoAnswer = flow(
+  ...
+  addCallbackRefAndNode(
+    &amp;#39;lightboxPortalTargetCallbackRef&amp;#39;,
+    &amp;#39;lightboxPortalTargetNode&amp;#39;
+  ),
+  addCallbackRefAndNode(
+    &amp;#39;visuallyHiddenVideoContainerCallbackRef&amp;#39;,
+    &amp;#39;visuallyHiddenVideoContainerNode&amp;#39;
+  ),
+  ...
+  ({
+    ...
+    lightboxPortalTargetCallbackRef,
+    visuallyHiddenVideoContainerCallbackRef,
+    ...
+  }) =&amp;gt;
+    ...
+      &amp;lt;div
+        css={a11yStyles.visuallyHidden}
+        aria-hidden=&amp;quot;true&amp;quot;
+        ref={visuallyHiddenVideoContainerCallbackRef}
+      /&amp;gt;
+      &amp;lt;Lightbox
+        ...
+        childPortalTargetRef={lightboxPortalTargetCallbackRef}
+      /&amp;gt;
+    ...
+)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;First of all, this is an &lt;a href=&quot;https://github.com/helixbass/ad-hok&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;ad-hok&lt;/code&gt;&lt;/a&gt;-style component using &lt;a href=&quot;https://simonsmith.io/dipping-a-toe-into-functional-js-with-lodash-fp#compose-yourself&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;flow()&lt;/code&gt;&lt;/a&gt;.
+&lt;code class=&quot;language-text&quot;&gt;ad-hok&lt;/code&gt; is allowing us to build up component functionality in a highly composable way similar to &lt;a href=&quot;https://github.com/acdlite/recompose&quot;&gt;Recompose&lt;/a&gt;,
+but where you’re using React hooks instead of higher-order components as your building blocks&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;addCallbackRefAndNode()&lt;/code&gt; is a helper for exposing a callback-style ref and the node it references:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import {flow} from &amp;#39;lodash/fp&amp;#39;
+import {upperFirst} from &amp;#39;lodash&amp;#39;
+import {addState, addCallback} from &amp;#39;ad-hok&amp;#39;
+
+const addCallbackRefAndNode = flow(
+  (refPropName, nodePropName) =&amp;gt; ({
+    refPropName,
+    nodePropName,
+    setNodePropName: `set${upperFirst(nodePropName)}`,
+  }),
+  ({refPropName, nodePropName, setNodePropName}) =&amp;gt;
+    flow(
+      addState(nodePropName, setNodePropName),
+      addCallback(
+        refPropName,
+        ({[setNodePropName]: setNode}) =&amp;gt; node =&amp;gt; {
+          setNode(node)
+        },
+        []
+      )
+    )
+)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Here, &lt;code class=&quot;language-text&quot;&gt;addState()&lt;/code&gt; and &lt;code class=&quot;language-text&quot;&gt;addCallback()&lt;/code&gt; are &lt;code class=&quot;language-text&quot;&gt;ad-hok&lt;/code&gt; helpers that wrap the &lt;code class=&quot;language-text&quot;&gt;useState()&lt;/code&gt; and &lt;code class=&quot;language-text&quot;&gt;useCallback()&lt;/code&gt; hooks, respectively.
+So &lt;code class=&quot;language-text&quot;&gt;addCallbackRefAndNode()&lt;/code&gt; is encapsulating a state variable for the callback ref to assign the DOM node reference to&lt;/p&gt;
+&lt;p&gt;And the &lt;code class=&quot;language-text&quot;&gt;childPortalTargetRef&lt;/code&gt; is a new prop I added to our &lt;code class=&quot;language-text&quot;&gt;&amp;lt;Lightbox&amp;gt;&lt;/code&gt; component to allow wiring up the ref to the modal body:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;const Lightbox = ({
+  ...
+  childPortalTargetRef,
+}) =&amp;gt; (
+  &amp;lt;Modal
+    ...
+  &amp;gt;
+    &amp;lt;Modal.Body
+      ...
+      ref={childPortalTargetRef}
+    &amp;gt;
+      ...
+    &amp;lt;/Modal.Body&amp;gt;
+  &amp;lt;/Modal&amp;gt;
+)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So that takes care of getting references to the two DOM nodes we need&lt;/p&gt;
+&lt;p&gt;Then we want to dynamically change which one the portal uses as its destination based on whether the modal is open:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;      &amp;lt;Portal
+        to={showingModal ? lightboxPortalTargetNode : visuallyHiddenVideoContainerNode}
+      &amp;gt;
+        &amp;lt;Video
+          ...
+          playing={showingModal}
+        /&amp;gt;
+      &amp;lt;/Portal&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;where &lt;code class=&quot;language-text&quot;&gt;&amp;lt;Portal&amp;gt;&lt;/code&gt; is just a simple wrapper around &lt;code class=&quot;language-text&quot;&gt;React.createPortal()&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import {createPortal} from &amp;#39;react-dom&amp;#39;
+import {flowMax, branch, renderNothing} from &amp;#39;ad-hok&amp;#39;
+
+import {childrenPropType, domNodePropType} from &amp;#39;util/propTypes&amp;#39;
+
+const Portal = flowMax(
+  branch(({to}) =&amp;gt; !to, renderNothing()),
+  ({to, children}) =&amp;gt; createPortal(children, to)
+)
+
+Portal.propTypes = {
+  to: domNodePropType,
+  children: childrenPropType.isRequired,
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;That’s the gist of the dynamic portal implementation&lt;/p&gt;
+&lt;p&gt;For completeness’ sake, I also ran into a little weird behavior in Chrome: for some reason when the modal was closed, the
+video’s audio was restarting and continuing to play (rather than the video stopping when the modal closed). We’re using
+&lt;a href=&quot;https://www.npmjs.com/package/react-player&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;react-player&lt;/code&gt;&lt;/a&gt; as an abstraction around the actual HTML5 &lt;code class=&quot;language-text&quot;&gt;&amp;lt;video&amp;gt;&lt;/code&gt; inside our
+&lt;code class=&quot;language-text&quot;&gt;&amp;lt;Video&amp;gt;&lt;/code&gt; component, so it’s possible its internal state got wonky. But regardless, we can seize control of the situation by
+making sure the video is fully unmounted after the modal has been closed&lt;/p&gt;
+&lt;p&gt;First, set up a &lt;code class=&quot;language-text&quot;&gt;hasModalBeenClosed&lt;/code&gt; state variable:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import {..., addStateHandlers} from &amp;#39;ad-hok&amp;#39;
+
+const addVideoUnmountingOnModalClose = flow(
+  addStateHandlers(
+    {hasModalBeenClosed: false},
+    {
+      onModalClose: () =&amp;gt; () =&amp;gt; ({
+        hasModalBeenClosed: true,
+      }),
+    }
+  ),
+  addEffectOnPropChange(
+    [&amp;#39;showingModal&amp;#39;],
+    ({showingModal, onModalClose}, prevProps) =&amp;gt; {
+      if (!showingModal &amp;amp;&amp;amp; prevProps.showingModal) {
+        onModalClose()
+      }
+    }
+  )
+)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This uses the handy &lt;a href=&quot;./addEffectOnPropChange&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;addEffectOnPropChange()&lt;/code&gt; helper&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;And then we’ll consider the value of &lt;code class=&quot;language-text&quot;&gt;hasModalBeenClosed&lt;/code&gt; when deciding what the portal destination should be&lt;/p&gt;
+&lt;p&gt;Putting it all together:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;const addVideoUnmountingOnModalClose = flow(
+  addStateHandlers(
+    {hasModalBeenClosed: false},
+    {
+      onModalClose: () =&amp;gt; () =&amp;gt; ({
+        hasModalBeenClosed: true,
+      }),
+    }
+  ),
+  addEffectOnPropChange(
+    [&amp;#39;showingModal&amp;#39;],
+    ({showingModal, onModalClose}, prevProps) =&amp;gt; {
+      if (!showingModal &amp;amp;&amp;amp; prevProps.showingModal) {
+        onModalClose()
+      }
+    }
+  )
+)
+
+const getVideoPortalTarget = ({
+  showingModal,
+  lightboxPortalTargetNode,
+  hasModalBeenClosed,
+  visuallyHiddenVideoContainerNode,
+}) =&amp;gt; {
+  if (showingModal) return lightboxPortalTargetNode
+  if (hasModalBeenClosed) return null
+  return visuallyHiddenVideoContainerNode
+}
+
+const VideoAnswer = flow(
+  ...
+  addState(&amp;#39;showingModal&amp;#39;, &amp;#39;setShowingModal&amp;#39;, false),
+  addCallbackRefAndNode(
+    &amp;#39;lightboxPortalTargetCallbackRef&amp;#39;,
+    &amp;#39;lightboxPortalTargetNode&amp;#39;
+  ),
+  addCallbackRefAndNode(
+    &amp;#39;visuallyHiddenVideoContainerCallbackRef&amp;#39;,
+    &amp;#39;visuallyHiddenVideoContainerNode&amp;#39;
+  ),
+  addVideoUnmountingOnModalClose,
+  ({
+    ...
+    showingModal,
+    lightboxPortalTargetCallbackRef,
+    lightboxPortalTargetNode,
+    visuallyHiddenVideoContainerCallbackRef,
+    visuallyHiddenVideoContainerNode,
+    hasModalBeenClosed,
+  }) =&amp;gt; (
+    &amp;lt;&amp;gt;
+      ...
+      &amp;lt;div
+        css={a11yStyles.visuallyHidden}
+        aria-hidden=&amp;quot;true&amp;quot;
+        ref={visuallyHiddenVideoContainerCallbackRef}
+      /&amp;gt;
+      &amp;lt;Portal
+        to={getVideoPortalTarget({
+          showingModal,
+          lightboxPortalTargetNode,
+          hasModalBeenClosed,
+          visuallyHiddenVideoContainerNode,
+        })}
+      &amp;gt;
+        &amp;lt;Video
+          ...
+          playing={showingModal}
+        /&amp;gt;
+        ...
+      &amp;lt;/Portal&amp;gt;
+      &amp;lt;Lightbox
+        show={showingModal}
+        ...
+        childPortalTargetRef={lightboxPortalTargetCallbackRef}
+      /&amp;gt;
+    &amp;lt;/&amp;gt;
+  )
+)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h4&gt;Unresolved: a11y&lt;/h4&gt;
+&lt;p&gt;This pattern seems to have achieved the desired behavior of getting unmuted autoplay to work cross-browser. But there’s an
+outstanding accessibility issue with it that I’m not sure if there’s a great solution to:&lt;/p&gt;
+&lt;p&gt;When the video is initially mounted inside the visually-hidden container, it’s hidden from screen readers using
+&lt;code class=&quot;language-text&quot;&gt;aria-hidden=&amp;quot;true&amp;quot;&lt;/code&gt;. But it’s still keyboard-navigable (ie you can hit Tab and it will focus on the interactive elements of
+the video component while it’s offscreen)&lt;/p&gt;
+&lt;p&gt;I tried using the HTML5 &lt;code class=&quot;language-text&quot;&gt;hidden&lt;/code&gt; attribute instead of &lt;code class=&quot;language-text&quot;&gt;aria-hidden=&amp;quot;true&amp;quot;&lt;/code&gt;, but that reverted the autoplay muted behavior&lt;/p&gt;
+&lt;p&gt;So I’m not sure if there’s a general a11y technique for making all interactive elements under a given parent container element
+non-keyboard-navigable?&lt;/p&gt;
+&lt;p&gt;Regardless, I think in this case achieving the desired autoplay behavior on the target iPad platform outweighs the potentially
+confusing keyboard navigation. But it would be nice to cover our bases a11y-wise especially when thinking about reusing this
+technique in the future&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Handy React hooks helper: useEffectOnPropChange()]]></title><description><![CDATA[A common pattern in React is to monitor the value of certain props and “do something” when they
+changeThe old way: “prop-diffing” in In the…]]></description><link>http://helixbass.net/blog/useeffectonpropchange/</link><guid isPermaLink="false">http://helixbass.net/blog/useeffectonpropchange/</guid><pubDate>Sun, 09 Jun 2019 18:02:38 GMT</pubDate><content:encoded>&lt;p&gt;A common pattern in React is to monitor the value of certain props and “do something” when they
+change&lt;/p&gt;
+&lt;h3&gt;The old way: “prop-diffing” in &lt;code class=&quot;language-text&quot;&gt;componentDidUpdate()&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;In the days before React hooks, a typical pattern would be to compare the previous and new values of a certain prop in a
+lifecycle method like &lt;code class=&quot;language-text&quot;&gt;componentDidUpdate()&lt;/code&gt; and conditionally “do something” if that prop had changed values in some
+particular way&lt;/p&gt;
+&lt;p&gt;For example:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;class Watcher extends React.Component {
+  ...
+  componentDidUpdate(prevProps) {
+    if (this.props.foo !== prevProps.foo &amp;amp;&amp;amp; this.props.foo === &amp;#39;bar&amp;#39;) {
+      console.log(&amp;quot;foo just changed to &amp;#39;bar&amp;#39;&amp;quot;)
+    }
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This type of “prop-diffing” always felt pretty boilerplate-y/hard to read - you’re sort of intermixing the mechanics of
+inspecting for a certain type of prop change having taken place with the action that should happen if that condition is met&lt;/p&gt;
+&lt;h3&gt;The new standard: &lt;code class=&quot;language-text&quot;&gt;useEffect()&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;These days, using class component lifecycle methods can typically be replaced by React hooks, in this case primarily
+&lt;a href=&quot;https://reactjs.org/docs/hooks-effect.html&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;useEffect()&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;The React hooks docs show us the &lt;a href=&quot;https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state&quot;&gt;basic pattern for getting a reference to the previous props&lt;/a&gt;:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import {useRef, useEffect} from &amp;#39;React&amp;#39;
+
+function usePrevious(value) {
+  const ref = useRef()
+  useEffect(() =&amp;gt; {
+    ref.current = value
+  })
+  return ref.current
+}
+
+const Compare = props =&amp;gt; {
+  const prevProps = usePrevious(props) || {}
+  return &amp;lt;h1&amp;gt;Previous foo: {prevProps.foo}, current foo: {props.foo}&amp;lt;/h1&amp;gt;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You can see that the &lt;code class=&quot;language-text&quot;&gt;usePrevious()&lt;/code&gt; helper is using the &lt;code class=&quot;language-text&quot;&gt;useRef()&lt;/code&gt; hook to track the previous value of something (in this case,
+the props passed to the &lt;code class=&quot;language-text&quot;&gt;&amp;lt;Compare&amp;gt;&lt;/code&gt; component)&lt;/p&gt;
+&lt;p&gt;So with &lt;code class=&quot;language-text&quot;&gt;usePrevious()&lt;/code&gt; as a building block, we can create an abstraction that allows us to say “when some particular prop
+changes, do something”:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import {find} from &amp;#39;lodash&amp;#39;
+
+const useEffectOnPropChange = (changeProps, callback) =&amp;gt; props =&amp;gt; {
+  const prevProps = usePrevious(props) || {}
+  useEffect(() =&amp;gt; {
+    const changed = find(
+      ensureArray(changeProps),
+      changeProp =&amp;gt; prevProps[changeProp] !== props[changeProp]
+    )
+    if (!changed) return null
+    return callback(props, prevProps)
+  })
+}
+
+const Watcher = props =&amp;gt; {
+  useEffectOnPropChange(&amp;#39;foo&amp;#39;, ({foo}, prevProps) =&amp;gt; {
+    if (foo === &amp;#39;bar&amp;#39; &amp;amp;&amp;amp; prevProps.foo === &amp;#39;baz&amp;#39;) {
+      console.log(&amp;quot;foo just changed to &amp;#39;bar&amp;#39; from &amp;#39;baz&amp;#39;&amp;quot;)
+    }
+  })(props)
+  ...
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Here &lt;code class=&quot;language-text&quot;&gt;ensureArray()&lt;/code&gt; is a helper that allows the first argument to &lt;code class=&quot;language-text&quot;&gt;useEffectOnPropChange()&lt;/code&gt; to either be an array of prop
+names or a single prop name:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import {isArray} from &amp;#39;lodash&amp;#39;
+
+const ensureArray = maybeArray =&amp;gt;
+  isArray(maybeArray) ? maybeArray : [maybeArray]
+
+...
+// both of these calling styles work:
+useEffectOnPropChange(&amp;#39;foo&amp;#39;, ...)(props)
+useEffectOnPropChange([&amp;#39;foo&amp;#39;, &amp;#39;bar&amp;#39;], ...)(props)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So with &lt;code class=&quot;language-text&quot;&gt;useEffectOnPropChange()&lt;/code&gt; we’ve given ourselves a more declarative way to indicate that something should happen
+whenever a certain prop changes value&lt;/p&gt;
+&lt;p&gt;This is a lot nicer than manually “prop-diffing” inside &lt;code class=&quot;language-text&quot;&gt;componentDidUpdate()&lt;/code&gt;, but I think there’s room to make it even more
+declarative. Basically now &lt;code class=&quot;language-text&quot;&gt;useEffectOnPropChange()&lt;/code&gt; is declarative with respect to &lt;em&gt;which prop we’re watching&lt;/em&gt; but not with
+respect to &lt;em&gt;under which conditions we care&lt;/em&gt; - often times (like in the example above), our condition is actually more specific
+than just “the &lt;code class=&quot;language-text&quot;&gt;foo&lt;/code&gt; prop changed”, it’s actually eg “the &lt;code class=&quot;language-text&quot;&gt;foo&lt;/code&gt; prop went from being null to non-null” or “the new value of the
+&lt;code class=&quot;language-text&quot;&gt;foo&lt;/code&gt; prop is &lt;code class=&quot;language-text&quot;&gt;&amp;#39;bar&amp;#39;&lt;/code&gt;”&lt;/p&gt;
+&lt;p&gt;I can picture a couple different ways of making those cases more declarative:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;// Maybe these common cases deserve their own name:
+useEffectOnPropBecomingTruthy(&amp;#39;foo&amp;#39;, ...)(props)
+useEffectOnPropBecomingFalsy(&amp;#39;foo&amp;#39;, ...)(props)
+
+// Here&amp;#39;s one calling interface for specifying the prop change condition separately from the action:
+useEffectOnPropChange({foo: (currentFoo, prevFoo) =&amp;gt; currentFoo === &amp;#39;bar&amp;#39; &amp;amp;&amp;amp; prevFoo === &amp;#39;baz&amp;#39;}, ...)(props)
+
+// Or similarly:
+useEffectOnPropChangeWhen((props, prevProps) =&amp;gt; props.foo === &amp;#39;bar&amp;#39; &amp;amp;&amp;amp; prevProps.foo === &amp;#39;baz&amp;#39;)(&amp;#39;foo&amp;#39;, ...)(props)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;These might all be nice ways to express a condition in different situations - the goal is to feel empowered to create the
+nice abstractions that you (and others) can then reach for when you encounter a situation where they’d come in handy!&lt;/p&gt;
+&lt;p&gt;For example, here’s how I might implement &lt;code class=&quot;language-text&quot;&gt;useEffectOnPropBecomingTruthy()&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;First, I think we’re going to need a general way to “inject the condition” into &lt;code class=&quot;language-text&quot;&gt;useEffectOnPropChange()&lt;/code&gt;. Looking at the
+ideas for different calling interfaces above, I think it’ll make sense to make &lt;code class=&quot;language-text&quot;&gt;useEffectOnPropChangeWhen()&lt;/code&gt; our underlying
+abstraction that all the rest (including &lt;code class=&quot;language-text&quot;&gt;useEffectOnPropChange()&lt;/code&gt;) are built on top of&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;const useEffectOnPropChangeWhen = (condition = () =&amp;gt; true) =&amp;gt; (changeProps, callback) =&amp;gt; props =&amp;gt; {
+  const prevProps = usePrevious(props) || {}
+  useEffect(() =&amp;gt; {
+    const changed = find(
+      ensureArray(changeProps),
+      changeProp =&amp;gt; prevProps[changeProp] !== props[changeProp]
+    )
+    if (!changed) return null
+    if (!condition(props, prevProps)) return null
+    return callback(props, prevProps)
+  })
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;We basically just added another “level of currying” to our previous &lt;code class=&quot;language-text&quot;&gt;useEffectOnPropChange()&lt;/code&gt; implementation in order to
+accept the additional &lt;code class=&quot;language-text&quot;&gt;condition&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;So now we can reimplement &lt;code class=&quot;language-text&quot;&gt;useEffectOnPropChange()&lt;/code&gt; in terms of &lt;code class=&quot;language-text&quot;&gt;useEffectOnPropChangeWhen()&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;const useEffectOnPropChange = (changeProps, callback) =&amp;gt;
+  useEffectOnPropChangeWhen()(changeProps, callback)
+  
+// or just:
+const useEffectOnPropChange = useEffectOnPropChangeWhen()&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And now we can implement variations like &lt;code class=&quot;language-text&quot;&gt;useEffectOnPropBecomingTruthy()&lt;/code&gt; also using &lt;code class=&quot;language-text&quot;&gt;useEffectOnPropChangeWhen()&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;const useEffectOnPropBecomingTruthy = (changeProps, callback) =&amp;gt; {
+  const arrayOfChangeProps = ensureArray(changeProps)
+  const condition = (props, prevProps) =&amp;gt;
+    find(arrayOfChangeProps, changeProp =&amp;gt; props[changeProp] &amp;amp;&amp;amp; !prevProps[changeProp])
+  return useEffectOnPropChangeWhen(condition)(changeProps, callback)
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;Bonus: use &lt;code class=&quot;language-text&quot;&gt;ad-hok&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;These are all nicely declarative &lt;a href=&quot;https://reactjs.org/docs/hooks-custom.html&quot;&gt;“custom hooks”&lt;/a&gt;. But I typically use
+&lt;a href=&quot;https://github.com/helixbass/ad-hok&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;ad-hok&lt;/code&gt;&lt;/a&gt; to allow composing hooks like this more fluidly&lt;/p&gt;
+&lt;p&gt;It’s trivial to convert these custom hooks into &lt;code class=&quot;language-text&quot;&gt;ad-hok&lt;/code&gt;-style helpers:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;const addEffectOnPropChange = (changeProps, callback) =&amp;gt; {
+  const curriedUseEffectOnPropChange = useEffectOnPropChange(changeProps, callback)
+  return props =&amp;gt; {
+    curriedUseEffectOnPropChange(props)
+    return props
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;or written in a more functional style:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import {flow} from &amp;#39;lodash/fp&amp;#39;
+
+const addEffectOnPropChange = flow(
+  useEffectOnPropChange,
+  tap
+)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;where &lt;code class=&quot;language-text&quot;&gt;tap()&lt;/code&gt; is a &lt;a href=&quot;https://ramdajs.com/0.21.0/docs/#tap&quot;&gt;standard&lt;/a&gt; &lt;a href=&quot;https://apidock.com/ruby/Object/tap&quot;&gt;functional&lt;/a&gt; &lt;a href=&quot;http://raganwald.com/JQuery-Combinators/&quot;&gt;helper&lt;/a&gt;:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;const tap = callback =&amp;gt; val =&amp;gt; {
+  callback(val)
+  return val
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The above is elegantly simple but might be hard to visualize, so here’s a version where the flow of arguments is more explicit:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;const addEffectOnPropChange = flow(
+  (changeProps, callback) =&amp;gt; useEffectOnPropChange(changeProps, callback),
+  curriedUseEffectOnPropChange =&amp;gt; {
+    return props =&amp;gt; {
+      curriedUseEffectOnPropChange(props)
+      return props
+    }
+  }
+)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Then we can use &lt;code class=&quot;language-text&quot;&gt;addEffectOnPropChange()&lt;/code&gt; in an &lt;code class=&quot;language-text&quot;&gt;ad-hok&lt;/code&gt;-style component:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;const Watcher = flow(
+  addEffectOnPropChange(&amp;#39;foo&amp;#39;, ({foo}, prevProps) =&amp;gt; {
+    if (foo === &amp;#39;bar&amp;#39; &amp;amp;&amp;amp; prevProps.foo === &amp;#39;baz&amp;#39;) {
+      console.log(&amp;quot;foo just changed to &amp;#39;bar&amp;#39; from &amp;#39;baz&amp;#39;&amp;quot;)
+    }
+  }),
+  ...
+)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;Practical use case: tracking current language&lt;/h3&gt;
+&lt;p&gt;In the current project I’m working on, we’re using &lt;a href=&quot;https://www.i18next.com/&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;i18next&lt;/code&gt;&lt;/a&gt;/&lt;a href=&quot;https://react.i18next.com/&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;react-i18next&lt;/code&gt;&lt;/a&gt;
+for internationalization support (translations)&lt;/p&gt;
+&lt;p&gt;It seems as though &lt;code class=&quot;language-text&quot;&gt;i18next&lt;/code&gt; expects to be the “source of truth” for what the currently selected language is. But that felt
+somewhat at odds with our Redux store being the source of truth for most similar state. And at some point I felt like I was
+seeing wonky/flaky updating of &lt;code class=&quot;language-text&quot;&gt;i18next&lt;/code&gt;’s version of what the currently selected language is&lt;/p&gt;
+&lt;p&gt;So at that point I decided to move the current language “source of truth” into our Redux store and have &lt;code class=&quot;language-text&quot;&gt;i18next&lt;/code&gt;’s idea of
+the current language be informed by our Redux store&lt;/p&gt;
+&lt;p&gt;There may be a more idiomatic way of “broadcasting” a value from your Redux store, but the way I achieved this was to create
+a component (that gets mounted at the root level of our application) whose sole purpose is to listen to the Redux store for
+changes to the current language and inform &lt;code class=&quot;language-text&quot;&gt;i18next&lt;/code&gt; of that change:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import {connect} from &amp;#39;react-redux&amp;#39;
+import {flowMax, renderNothing} from &amp;#39;ad-hok&amp;#39;
+import i18n from &amp;#39;i18next&amp;#39;
+import PropTypes from &amp;#39;prop-types&amp;#39;
+
+import {languageSelector} from &amp;#39;redux-local/selectors&amp;#39;
+import addEffectOnPropChange from &amp;#39;util/addEffectOnPropChange&amp;#39;
+
+const enhance = connect(languageSelector)
+
+const WatchLanguage = flowMax(
+  ...
+  addEffectOnPropChange(&amp;#39;currentLanguage&amp;#39;, ({currentLanguage}) =&amp;gt; {
+    i18n.changeLanguage(currentLanguage)
+  }),
+  renderNothing()
+)
+
+WatchLanguage.propTypes = {
+  currentLanguage: PropTypes.string.isRequired,
+}
+
+export default enhance(WatchLanguage)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;addEffectOnPropChange()&lt;/code&gt; makes it super easy to fire off the call to &lt;code class=&quot;language-text&quot;&gt;i18n.changeLanguage()&lt;/code&gt; whenever our Redux store’s
+&lt;code class=&quot;language-text&quot;&gt;currentLanguage&lt;/code&gt; changes&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Slack tip: personal activity channel]]></title><description><![CDATA[I’m a big fan of using the Slack Github integration to get Github notifications for projects I’m involved withTypically in the past, each…]]></description><link>http://helixbass.net/blog/slack-personal-activity-channel/</link><guid isPermaLink="false">http://helixbass.net/blog/slack-personal-activity-channel/</guid><pubDate>Sun, 12 May 2019 13:15:38 GMT</pubDate><content:encoded>&lt;p&gt;I’m a big fan of using the &lt;a href=&quot;https://slack.github.com/&quot;&gt;Slack Github integration&lt;/a&gt; to get Github notifications for projects I’m involved with&lt;/p&gt;
 &lt;p&gt;Typically in the past, each project has set up its own project-specific “activity channel” in Slack eg &lt;code class=&quot;language-text&quot;&gt;#project-abc-activity&lt;/code&gt; and then someone sets up all the automated integrations for the project there (Github, Zeplin, …)&lt;/p&gt;
 &lt;p&gt;This works ok, but there have been differing opinions about eg the desired level of verbosity/frequency of notifications on that channel&lt;/p&gt;
 &lt;h3&gt;Personalize it&lt;/h3&gt;
