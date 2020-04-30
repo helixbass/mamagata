@@ -30,7 +30,7 @@
     "glamorous": "^3.23.5",
     "glob": "^7.1.2",
     "gonzales-pe": "^4.0.3",
-    "jquery": "^3.2.1",
+    "jquery": "^3.5.0",
     "jquery-color": "https://github.com/jquery/jquery-color",
     "js-yaml": "^3.9.0",
     "node-sass": "^4.5.3",
