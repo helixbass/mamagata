@@ -89,13 +89,13 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
-"animate-backgrounds@github:helixbass/animate-backgrounds":
-  version "0.1.0"
-  resolved "https://codeload.github.com/helixbass/animate-backgrounds/tar.gz/be02ace663341f543403d064ee58ab95069b2979"
+animate-backgrounds@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/animate-backgrounds/-/animate-backgrounds-0.1.6.tgz#7e562fadf4ba7448edf0dee332c530d04e756929"
 
-"animejs@https://github.com/helixbass/anime#css_hooks":
-  version "2.0.2"
-  resolved "https://github.com/helixbass/anime#88506180cda8356c492adfb93d62cb3cef394a0f"
+animejs-hooks@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/animejs-hooks/-/animejs-hooks-0.1.1.tgz#c624e9f1973265dc52d51b639ddeb8e4fea20fa3"
 
 ansi-escapes@^2.0.0:
   version "2.0.0"
@@ -1209,9 +1209,9 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
-"coffee-jsxy-loader@github:helixbass/coffee-loader#82a7cd7":
-  version "0.7.3"
-  resolved "https://codeload.github.com/helixbass/coffee-loader/tar.gz/82a7cd7"
+coffee-jsxy-loader@^0.1.0:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/coffee-jsxy-loader/-/coffee-jsxy-loader-0.1.1.tgz#b73e445864110b7c1f190b74befd680ea89dd47d"
   dependencies:
     loader-utils "^1.0.2"
 
@@ -1225,9 +1225,9 @@ coffee-script@^1.12.6:
   version "1.12.6"
   resolved "https://registry.yarnpkg.com/coffee-script/-/coffee-script-1.12.6.tgz#285a3f7115689065064d6bf9ef4572db66695cbf"
 
-"coffeescript-jsxy@github:helixbass/copheescript#jsx2_os":
-  version "2.0.0-beta2"
-  resolved "https://codeload.github.com/helixbass/copheescript/tar.gz/40170e1bf452105021fb69098a8cd1aca9224ef0"
+coffeescript-jsxy@^0.1.4:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/coffeescript-jsxy/-/coffeescript-jsxy-0.1.7.tgz#45e14946272011b34606ce15e735f0bba2cabace"
 
 color-convert@^1.0.0, color-convert@^1.3.0:
   version "1.9.0"
@@ -2097,6 +2097,18 @@ fbjs@^0.8.12, fbjs@^0.8.9:
     setimmediate "^1.0.5"
     ua-parser-js "^0.7.9"
 
+fbjs@^0.8.4:
+  version "0.8.17"
+  resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.17.tgz#c4d598ead6949112653d6588b01a5cdcd9f90fdd"
+  dependencies:
+    core-js "^1.0.0"
+    isomorphic-fetch "^2.1.1"
+    loose-envify "^1.0.0"
+    object-assign "^4.1.0"
+    promise "^7.1.1"
+    setimmediate "^1.0.5"
+    ua-parser-js "^0.7.18"
+
 figures@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/figures/-/figures-2.0.0.tgz#3ab1a2d2a62c8bfb431a0c94cb797a2fce27c962"
@@ -2868,9 +2880,9 @@ javascript-natural-sort@0.7.1:
   version "3.0.0-pre"
   resolved "https://github.com/jquery/jquery-color#485460cc0109cef100a1a6afd0d0225292bd69b9"
 
-jquery@^3.2.1, jquery@x.*:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.2.1.tgz#5c4d9de652af6cd0a770154a631bba12b015c787"
+jquery@^3.5.0, jquery@x.*:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.5.0.tgz#9980b97d9e4194611c36530e7dc46a58d7340fc9"
 
 js-base64@^2.1.8, js-base64@^2.1.9:
   version "2.1.9"
@@ -4388,8 +4400,17 @@ rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-"react-color@file:../react-color":
+react-addons-perf@^15.4.2:
+  version "15.4.2"
+  resolved "https://registry.yarnpkg.com/react-addons-perf/-/react-addons-perf-15.4.2.tgz#110bdcf5c459c4f77cb85ed634bcd3397536383b"
+  dependencies:
+    fbjs "^0.8.4"
+    object-assign "^4.1.0"
+
+"react-color@github:helixbass/react-color#photoshop":
   version "2.13.3"
+  uid "5ca90b7e2f47a092568b383ce143153b798b8c6a"
+  resolved "https://codeload.github.com/helixbass/react-color/tar.gz/5ca90b7e2f47a092568b383ce143153b798b8c6a"
   dependencies:
     lodash "^4.0.1"
     material-colors "^1.2.1"
@@ -4740,6 +4761,10 @@ rx-lite@*, rx-lite@^4.0.8:
 safe-buffer@5.1.1, safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.1.tgz#893312af69b2123def71f57889001671eeb2c853"
+
+sass-gradient-patterns@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/sass-gradient-patterns/-/sass-gradient-patterns-0.1.6.tgz#d5575af7bc563acc4b95e0f4df25bff4ba435e7c"
 
 sass-graph@^2.1.1:
   version "2.2.4"
@@ -5308,6 +5333,10 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
+ua-parser-js@^0.7.18:
+  version "0.7.21"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.21.tgz#853cf9ce93f642f67174273cc34565ae6f308777"
+
 ua-parser-js@^0.7.9:
   version "0.7.13"
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.13.tgz#cd9dd2f86493b3f44dbeeef3780fda74c5ee14be"
@@ -5408,6 +5437,10 @@ uuid@^2.0.2:
 uuid@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.1.0.tgz#3dd3d3e790abc24d7b0d3a034ffababe28ebbc04"
+
+uuid@^3.1.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
 
 validate-npm-package-license@^3.0.1:
   version "3.0.1"
@@ -5552,6 +5585,10 @@ websocket-extensions@>=0.1.1:
 whatwg-fetch@>=0.10.0:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-2.0.3.tgz#9c84ec2dcf68187ff00bc64e1274b442176e1c84"
+
+whatwg-fetch@^2.0.3:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
 
 whet.extend@~0.9.9:
   version "0.9.9"
