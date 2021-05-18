@@ -13,7 +13,7 @@ gem 'sqlite3'
 # Use Puma as the app server
 # gem 'puma', '~> 3.7'
 # https://github.com/seuros/capistrano-puma/issues/237
-gem 'puma', '3.8.1'
+gem 'puma', '3.12.6'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
