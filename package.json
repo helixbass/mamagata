@@ -33,7 +33,7 @@
     "jquery": "^3.2.1",
     "jquery-color": "https://github.com/jquery/jquery-color",
     "js-yaml": "^3.9.0",
-    "node-sass": "^4.5.3",
+    "node-sass": "^7.0.0",
     "path-complete-extname": "^0.1.0",
     "postcss-loader": "^2.0.6",
     "postcss-smart-import": "^0.7.5",
